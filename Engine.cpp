@@ -44,6 +44,10 @@ unsigned int viewLoc;
 unsigned int projLoc;
 glm::ivec2 awh;
 unsigned int shaderProgram;
+bool firstMouse;
+float lastX, lastY;
+
+Camera camera;
 
 Texture LoadTexture(const char* path){
     Texture texture;
@@ -79,58 +83,46 @@ Texture LoadTexture(const char* path){
     std::cout<<"Texture size: "<<texture.width<<"x"<<texture.height<<" Channels: "<<channels<<"\n";
     return texture;
 }
-void AddObject(Object& object){
-    for(int i=0; i<mesh.objects.size(); i++){
-        if(object.z<mesh.objects[i].z){
-            mesh.objects.insert(mesh.objects.begin()+i, object);
-            return;
+bool FitsInFree(Model& model, uint32_t& id){
+    for(int i=0; i<mesh.free.size(); i++){
+        if(model.vertices.size()<=mesh.free[i].size){
+            id=mesh.free[i].id;
+            if(mesh.free[i].size==model.vertices.size()) mesh.free.erase(mesh.free.begin()+i);
+            else{
+                mesh.free[i].id+=model.vertices.size();
+                mesh.free[i].size-=model.vertices.size();
+            }
+            return 1;
         }
     }
-    mesh.objects.push_back(object);
+    id=mesh.vertices.size();
+    return 0;
 }
-Sprite MakeSprite(glm::ivec2 pos, glm::ivec2 wh){
-    Sprite sprite;
-    sprite.uv0={pos.x/(float)awh.x, pos.y/(float)awh.y};
-    sprite.uv1={(pos.x+wh.x)/(float)awh.x, (pos.y+wh.y)/(float)awh.y};
-    return sprite;
-}
-void AddQuad(Quad& quad){
+void AddModel(Model& model){
     glm::vec3 scale(WINDOW_SCALE);
     uint32_t id;
-    if(mesh.free.size()>0){
-        id=mesh.free.back();
-        mesh.vertices[id]={quad.position*scale, quad.sprite.uv0, quad.light, quad.alpha};
-        mesh.vertices[id+1]={(quad.position+glm::vec3(quad.size.x, 0.0f, 0.0f))*scale, {quad.sprite.uv1.x, quad.sprite.uv0.y}, quad.light, quad.alpha};
-        mesh.vertices[id+2]={(quad.position+glm::vec3(quad.size, 0.0f))*scale, quad.sprite.uv1, quad.light, quad.alpha};
-        mesh.vertices[id+3]={(quad.position+glm::vec3(0.0f, quad.size.y, 0.0f))*scale, {quad.sprite.uv0.x, quad.sprite.uv1.y}, quad.light, quad.alpha};
-        mesh.free.pop_back();
+    if(FitsInFree(model, id)){
+        for(int i=0; i<model.vertices.size(); i++){
+            mesh.vertices[id+i]=model.vertices[i];
+        }
     }else{
-        id=mesh.vertices.size();
-        mesh.vertices.push_back({quad.position*scale, quad.sprite.uv0, quad.light, quad.alpha});
-        mesh.vertices.push_back({(quad.position+glm::vec3(quad.size.x, 0.0f, 0.0f))*scale, {quad.sprite.uv1.x, quad.sprite.uv0.y}, quad.light, quad.alpha});
-        mesh.vertices.push_back({(quad.position+glm::vec3(quad.size, 0.0f))*scale, quad.sprite.uv1, quad.light, quad.alpha});
-        mesh.vertices.push_back({(quad.position+glm::vec3(0.0f, quad.size.y, 0.0f))*scale, {quad.sprite.uv0.x, quad.sprite.uv1.y}, quad.light, quad.alpha});
-        mesh.indexoffset+=4;
+        mesh.vertices.insert(mesh.vertices.end(), model.vertices.begin(), model.vertices.end());
     }
 
     Object object;
     object.indexoffset=id;
-    object.z=quad.position.z;
-    object.indices.push_back(id);
-    object.indices.push_back(id+1);
-    object.indices.push_back(id+2);
-    object.indices.push_back(id+0);
-    object.indices.push_back(id+3);
-    object.indices.push_back(id+2);
+    for(int i=0; i<model.vertices.size(); i++){
+        object.indices.push_back(id+i);
+    }
+    mesh.objects.push_back(object);
 
     mesh.dirty=1;
-
-    AddObject(object);
 }
 void RemoveObject(Object& object){
     object.alive=0;
     mesh.dirty=1;
-    mesh.free.push_back(object.indexoffset);
+    FreePart f{object.indexoffset, object.indices.size()};
+    mesh.free.push_back(f);
 }
 void UploadMesh(){
     glGenVertexArrays(1, &mesh.renderer.VAO);
@@ -167,6 +159,22 @@ void DrawMesh(){
     glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
+void MouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed Y
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
 
 int InitEngine(){
     if(!glfwInit()){
@@ -180,13 +188,14 @@ int InitEngine(){
     GLFWmonitor* monitor=glfwGetPrimaryMonitor();
     const GLFWvidmode* mode=glfwGetVideoMode(monitor);
 
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    WINDOW_SCALE=mode->width/WINDOW_WIDTH;
+    //WINDOW_SCALE=mode->width/WINDOW_WIDTH;
 
-    std::cout<<"window: "<<mode->width<<"x"<<mode->height<<" scale: "<<WINDOW_SCALE<<"\n";
+    //std::cout<<"window: "<<mode->width<<"x"<<mode->height<<" scale: "<<WINDOW_SCALE<<"\n";
 
-    window=glfwCreateWindow(mode->width, mode->height, "yes", nullptr, nullptr);
+    window=glfwCreateWindow(WINDOW_SCALE*WINDOW_WIDTH,WINDOW_SCALE*WINDOW_HEIGHT, "game", nullptr, nullptr);
     if(!window){
         std::cout<<"Window creation failed\n";
         glfwTerminate();
@@ -247,8 +256,14 @@ int InitEngine(){
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
     glViewport(0, 0, WINDOW_WIDTH*WINDOW_SCALE, WINDOW_HEIGHT*WINDOW_SCALE);
-    glm::mat4 projection=glm::ortho(0.0f, (float)WINDOW_WIDTH*WINDOW_SCALE, 0.0f, (float)WINDOW_HEIGHT*WINDOW_SCALE, -100.0f, 100.0f);
+    glm::mat4 projection=glm::perspective((float)glm::tan(glm::radians(45.0f)), (float)WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 1000.0f);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, MouseCallback);
     glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);                                   //bg color
