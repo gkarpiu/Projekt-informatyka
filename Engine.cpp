@@ -123,11 +123,13 @@ void RemoveObject(Object& object){
     mesh.dirty=1;
     FreePart f{object.indexoffset, object.indices.size()};
     mesh.free.push_back(f);
+
+    mesh.dirty=1;
 }
 void UploadMesh(){
-    glGenVertexArrays(1, &mesh.renderer.VAO);
-    glGenBuffers(1, &mesh.renderer.VBO);
-    glGenBuffers(1, &mesh.renderer.EBO);
+    if(mesh.renderer.VAO==0) glGenVertexArrays(1, &mesh.renderer.VAO);
+    if(mesh.renderer.VBO==0) glGenBuffers(1, &mesh.renderer.VBO);
+    if(mesh.renderer.EBO==0) glGenBuffers(1, &mesh.renderer.EBO);
 
     glBindVertexArray(mesh.renderer.VAO);
 
