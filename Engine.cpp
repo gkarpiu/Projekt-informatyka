@@ -157,11 +157,12 @@ void BuildIndexBuffer(){
     }
     mesh.dirty=0;
 }
-void DrawMesh(){
+void DrawMesh(Mesh& mesh){
     glBindVertexArray(mesh.renderer.VAO);
     glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
+
 void MouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse) {
@@ -288,12 +289,9 @@ void DoDrawing(Camera& camera){
     glm::mat4 model=glm::mat4(1.0f);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     
-    if(mesh.dirty){
-        BuildIndexBuffer();
-        UploadMesh();
+    for(Mesh* m : meshes){
+        DrawMesh(*m);
     }
-
-    DrawMesh();
 
     glfwSwapBuffers(window);
     glfwPollEvents();

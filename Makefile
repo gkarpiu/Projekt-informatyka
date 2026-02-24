@@ -13,7 +13,7 @@ OBJDIR := objects
 LIBDIR := lib
 
 # -------- Shared sources --------
-COMMON_CPP := Camera.cpp Engine.cpp
+COMMON_CPP := Camera.cpp Engine.cpp Physics.cpp
 COMMON_OBJ := $(patsubst %.cpp,$(OBJDIR)/%.o,$(COMMON_CPP))
 
 # -------- Targets --------
