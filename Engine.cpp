@@ -155,6 +155,7 @@ void BuildIndexBuffer(){
     for(Object& o : mesh.objects){
         if(o.alive) mesh.indices.insert(mesh.indices.end(), o.indices.begin(), o.indices.end());
     }
+    mesh.dirty=0;
 }
 void DrawMesh(){
     glBindVertexArray(mesh.renderer.VAO);
