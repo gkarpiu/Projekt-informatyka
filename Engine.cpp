@@ -107,16 +107,15 @@ void LoadObject(std::string name){
             ss>>tuv.back().x>>tuv.back().y;
         }else if(type=="f"){
             std::string vd;
-            std::cout<<"f";
             while(ss>>vd){
                 std::istringstream vs(vd);
                 std::string ts;
                 std::getline(vs, ts, '/');
                 int posId=std::stoi(ts)-1;
                 std::getline(vs, ts, '/');
-                int norId=std::stoi(ts)-1;
-                std::getline(vs, ts);
                 int uvId=std::stoi(ts)-1;
+                std::getline(vs, ts);
+                int norId=std::stoi(ts)-1;
                 mesh.vertices.push_back({tpos[posId], tnor[norId], tuv[uvId], 1.0f, 1.0f});
                 mesh.indices.emplace_back(mesh.vertices.size()-1);
             }
@@ -268,12 +267,12 @@ int InitEngine(){
     glfwSetCursorPosCallback(window, MouseCallback);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    /*glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CCW);*/
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);                                   //bg color
+    glClearColor(0.3f, 0.1f, 0.5f, 1.0f);                                   //bg color
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.id);
 

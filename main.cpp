@@ -36,6 +36,33 @@ int main(){
     while(!ShouldClose()){
         DoMovement(camera, window);
         
+
+
+
+
+
+
+                    entities[0].transform=glm::rotate(entities[0].transform, 0.01f, {1.0f, 1.0f, 1.0f});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         DoDrawing(camera);
     }
     CloseEngine();
