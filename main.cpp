@@ -4,7 +4,7 @@
 int main(){
     InitEngine();
 
-    Mesh mesh;
+    /*Mesh mesh;
     Vertex v;
     v.alpha=1;
     v.light=1;
@@ -26,20 +26,15 @@ int main(){
     mesh.indices.push_back(2);
 
     meshes.emplace_back();
-    UploadMesh(mesh, meshes.back());
+    UploadMesh(mesh, meshes.back());*/
+
+    LoadObject("test.obj");
 
     AddEntity(0);
-    AddEntity(0);
-    AddEntity(0);
-
-    entities[1].transform=glm::translate(entities[1].transform, {10, 0, 0});
-    entities[2].transform=glm::translate(entities[1].transform, {-5, 10, 5});
 
     //Render loop
     while(!ShouldClose()){
         DoMovement(camera, window);
-
-        entities[0].transform=glm::rotate(entities[0].transform, glm::radians(0.2f), {0, 0, 1});
         
         DoDrawing(camera);
     }
