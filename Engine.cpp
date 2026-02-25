@@ -107,6 +107,7 @@ void LoadObject(std::string name){
             ss>>tuv.back().x>>tuv.back().y;
         }else if(type=="f"){
             std::string vd;
+            std::cout<<"f";
             while(ss>>vd){
                 std::istringstream vs(vd);
                 std::string ts;
@@ -115,13 +116,8 @@ void LoadObject(std::string name){
                 std::getline(vs, ts, '/');
                 int norId=std::stoi(ts)-1;
                 std::getline(vs, ts);
-                int uvId;
-                glm::vec2 uv;
-                if(ts=="") uvId=0;
-                else uvId=std::stoi(ts)-1;
-                if(tuv.size()==0) uv={0.0f, 0.0f};
-                else uv=tuv[uvId];
-                mesh.vertices.push_back({tpos[posId], tnor[norId], uv, 1.0f, 1.0f});
+                int uvId=std::stoi(ts)-1;
+                mesh.vertices.push_back({tpos[posId], tnor[norId], tuv[uvId], 1.0f, 1.0f});
                 mesh.indices.emplace_back(mesh.vertices.size()-1);
             }
         }
