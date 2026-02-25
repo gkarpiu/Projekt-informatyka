@@ -38,14 +38,14 @@ const char* fragmentShaderSource=
 
 int WINDOW_SCALE=1;
 GLFWwindow* window=nullptr;
-Mesh mesh;
 unsigned int modelLoc;
 unsigned int viewLoc;
 unsigned int projLoc;
-glm::ivec2 awh;
 unsigned int shaderProgram;
 bool firstMouse;
 float lastX, lastY;
+std::vector<Renderer> meshes;
+std::vector<Entity> entities;
 
 Camera camera;
 
@@ -77,66 +77,73 @@ Texture LoadTexture(const char* path){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     stbi_image_free(data);
-
-    awh={texture.width, texture.height};
     
     std::cout<<"Texture size: "<<texture.width<<"x"<<texture.height<<" Channels: "<<channels<<"\n";
     return texture;
 }
-bool FitsInFree(Model& model, uint32_t& id){
-    for(int i=0; i<mesh.free.size(); i++){
-        if(model.vertices.size()<=mesh.free[i].size){
-            id=mesh.free[i].id;
-            if(mesh.free[i].size==model.vertices.size()) mesh.free.erase(mesh.free.begin()+i);
-            else{
-                mesh.free[i].id+=model.vertices.size();
-                mesh.free[i].size-=model.vertices.size();
+
+void LoadObject(std::string name){
+    Mesh mesh;
+    std::vector<glm::vec3> tpos;
+    std::vector<glm::vec3> tnor;
+    std::vector<glm::vec2> tuv;
+
+    std::ifstream inf(name);
+    
+    std::string line;
+    while(std::getline(inf, line)){
+        std::istringstream ss(line);
+        std::string type;
+        ss>>type;
+        
+        if(type=="v"){
+            tpos.emplace_back();
+            ss>>tpos.back().x>>tpos.back().y>>tpos.back().z;
+        }else if(type=="vn"){
+            tnor.emplace_back();
+            ss>>tnor.back().x>>tnor.back().y>>tnor.back().z;
+        }else if(type=="vt"){
+            tuv.emplace_back();
+            ss>>tuv.back().x>>tuv.back().y;
+        }else if(type=="f"){
+            std::string vd;
+            while(ss>>vd){
+                std::istringstream vs(vd);
+                std::string ts;
+                std::getline(vs, ts, '/');
+                int posId=std::stoi(ts)-1;
+                std::getline(vs, ts, '/');
+                int norId=std::stoi(ts)-1;
+                std::getline(vs, ts);
+                int uvId;
+                glm::vec2 uv;
+                if(ts=="") uvId=0;
+                else uvId=std::stoi(ts)-1;
+                if(tuv.size()==0) uv={0.0f, 0.0f};
+                else uv=tuv[uvId];
+                mesh.vertices.push_back({tpos[posId], tnor[norId], uv, 1.0f, 1.0f});
+                mesh.indices.emplace_back(mesh.vertices.size()-1);
             }
-            return 1;
         }
     }
-    id=mesh.vertices.size();
-    return 0;
+    inf.close();
+    std::cout<<"Parsed "<<mesh.vertices.size()<<" vertices\n";
+
+    meshes.emplace_back();
+    UploadMesh(mesh, meshes.back());
 }
-void AddModel(Model& model){
-    glm::vec3 scale(WINDOW_SCALE);
-    uint32_t id;
-    if(FitsInFree(model, id)){
-        for(int i=0; i<model.vertices.size(); i++){
-            mesh.vertices[id+i]=model.vertices[i];
-        }
-    }else{
-        mesh.vertices.insert(mesh.vertices.end(), model.vertices.begin(), model.vertices.end());
-    }
+void UploadMesh(Mesh& mesh, Renderer& renderer){
+    renderer.idCount=mesh.indices.size();
+    glGenVertexArrays(1, &renderer.VAO);
+    glGenBuffers(1, &renderer.VBO);
+    glGenBuffers(1, &renderer.EBO);
 
-    Object object;
-    object.indexoffset=id;
-    for(int i=0; i<model.vertices.size(); i++){
-        object.indices.push_back(id+i);
-    }
-    mesh.objects.push_back(object);
+    glBindVertexArray(renderer.VAO);
 
-    mesh.dirty=1;
-}
-void RemoveObject(Object& object){
-    object.alive=0;
-    mesh.dirty=1;
-    FreePart f{object.indexoffset, object.indices.size()};
-    mesh.free.push_back(f);
-
-    mesh.dirty=1;
-}
-void UploadMesh(){
-    if(mesh.renderer.VAO==0) glGenVertexArrays(1, &mesh.renderer.VAO);
-    if(mesh.renderer.VBO==0) glGenBuffers(1, &mesh.renderer.VBO);
-    if(mesh.renderer.EBO==0) glGenBuffers(1, &mesh.renderer.EBO);
-
-    glBindVertexArray(mesh.renderer.VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.renderer.VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, renderer.VBO);
     glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size()*sizeof(Vertex), mesh.vertices.data(), GL_DYNAMIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.renderer.EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer.EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), mesh.indices.data(), GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(0);
@@ -150,16 +157,16 @@ void UploadMesh(){
 
     glBindVertexArray(0);
 }
-void BuildIndexBuffer(){
-    mesh.indices.clear();
-    for(Object& o : mesh.objects){
-        if(o.alive) mesh.indices.insert(mesh.indices.end(), o.indices.begin(), o.indices.end());
-    }
-    mesh.dirty=0;
+
+size_t AddEntity(size_t mesh){
+    entities.push_back({mesh, glm::mat4(1.0f)});
+    return entities.size()-1;
 }
-void DrawMesh(Mesh& mesh){
-    glBindVertexArray(mesh.renderer.VAO);
-    glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
+
+void DrawEntity(Entity& entity){
+    glBindVertexArray(meshes[entity.mesh].VAO);
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(entity.transform));
+    glDrawElements(GL_TRIANGLES, meshes[entity.mesh].idCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
@@ -260,7 +267,7 @@ int InitEngine(){
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
     glViewport(0, 0, WINDOW_WIDTH*WINDOW_SCALE, WINDOW_HEIGHT*WINDOW_SCALE);
-    glm::mat4 projection=glm::perspective((float)glm::tan(glm::radians(45.0f)), (float)WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 1000.0f);
+    glm::mat4 projection=glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 1000.0f);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, MouseCallback);
     glEnable(GL_BLEND);
@@ -286,11 +293,9 @@ void DoDrawing(Camera& camera){
 
     glm::mat4 view=camera.GetViewMatrix();
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glm::mat4 model=glm::mat4(1.0f);
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     
-    for(Mesh* m : meshes){
-        DrawMesh(*m);
+    for(Entity& e : entities){
+        DrawEntity(e);
     }
 
     glfwSwapBuffers(window);
@@ -298,9 +303,11 @@ void DoDrawing(Camera& camera){
 }
 
 void CloseEngine(){
-    glDeleteVertexArrays(1, &mesh.renderer.VAO);
-    glDeleteBuffers(1, &mesh.renderer.VBO);
-    glDeleteBuffers(1, &mesh.renderer.EBO);
+    for(Entity& e : entities){
+        glDeleteVertexArrays(1, &meshes[e.mesh].VAO);
+        glDeleteBuffers(1, &meshes[e.mesh].VBO);
+        glDeleteBuffers(1, &meshes[e.mesh].EBO);
+    }
 
     glDeleteProgram(shaderProgram);
     glfwTerminate();

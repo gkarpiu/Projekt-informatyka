@@ -9,6 +9,9 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include <fstream>
+#include <string>
+#include <sstream>
 #include "Camera.h"
 
 constexpr int WINDOW_WIDTH=1920;
@@ -24,60 +27,46 @@ struct Vertex{
     float light;
     float alpha;
 };
-struct Model{
-    std::vector<Vertex> vertices;
-};
 struct Renderer{
     GLuint VAO=0;
     GLuint VBO=0;
     GLuint EBO=0;
-};
-struct Object{
-    uint32_t indexoffset;
-    std::vector<uint32_t> indices; 
-    bool alive=1;
-};
-struct FreePart{
-    size_t id;
-    size_t size;
+
+    size_t idCount;
 };
 struct Mesh{
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
-    std::vector<FreePart> free;
-    std::vector<Object> objects;
-
-    bool dirty;
-
-    Renderer renderer;
 };
 struct Texture{
     GLuint id;
     int width;
     int height;
 };
+struct Entity{
+    size_t mesh;
+    glm::mat4 transform;
+};
 
 extern int WINDOW_SCALE;
 extern GLFWwindow* window;
-extern Mesh mesh;
 extern unsigned int modelLoc;
 extern unsigned int viewLoc;
 extern unsigned int projLoc;
-extern glm::ivec2 awh;
 extern unsigned int shaderProgram;
 extern bool firstMouse;
 extern float lastX, lastY;
+extern std::vector<Renderer> meshes;
+extern std::vector<Entity> entities;
 
 extern Camera camera;
 
 Texture LoadTexture(const char* path);
-bool FitsInFree(Model& model, uint32_t& id);
-void AddModel(Model& model);
-void RemoveObject(Object& object);
-void UploadMesh();
-void BuildIndexBuffer();
-void DrawMesh();
-void MouseCallback(GLFWwindow* window, Camera& camera, double xpos, double ypos);
+void LoadObject(std::string name);
+void UploadMesh(Mesh& mesh, Renderer& renderer);
+size_t AddEntity(size_t mesh);
+void DrawEntity(Entity& entity);
+void MouseCallback(GLFWwindow* window, double xpos, double ypos);
 
 int InitEngine();
 
