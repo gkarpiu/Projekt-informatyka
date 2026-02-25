@@ -62,7 +62,7 @@ extern std::vector<Entity> entities;
 extern Camera camera;
 
 Texture LoadTexture(const char* path);
-void LoadObject(std::string name);
+int LoadObject(std::string name);
 void UploadMesh(Mesh& mesh, Renderer& renderer);
 size_t AddEntity(size_t mesh);
 void DrawEntity(Entity& entity);

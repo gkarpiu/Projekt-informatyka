@@ -82,7 +82,7 @@ Texture LoadTexture(const char* path){
     return texture;
 }
 
-void LoadObject(std::string name){
+int LoadObject(std::string name){
     Mesh mesh;
     std::vector<glm::vec3> tpos;
     std::vector<glm::vec3> tnor;
@@ -126,6 +126,8 @@ void LoadObject(std::string name){
 
     meshes.emplace_back();
     UploadMesh(mesh, meshes.back());
+
+    return meshes.size()-1;
 }
 void UploadMesh(Mesh& mesh, Renderer& renderer){
     renderer.idCount=mesh.indices.size();
