@@ -107,6 +107,8 @@ int LoadObject(std::string name){
             ss>>tuv.back().x>>tuv.back().y;
         }else if(type=="f"){
             std::string vd;
+            std::vector<glm::vec3> points(3);
+            points.clear();
             while(ss>>vd){
                 std::istringstream vs(vd);
                 std::string ts;
@@ -118,7 +120,9 @@ int LoadObject(std::string name){
                 int norId=std::stoi(ts)-1;
                 mesh.vertices.push_back({tpos[posId], tnor[norId], tuv[uvId], 1.0f, 1.0f});
                 mesh.indices.emplace_back(mesh.vertices.size()-1);
+                points.push_back(tpos[posId]);
             }
+            collisions.push_back({points[0], points[1], points[2]});
         }
     }
     inf.close();
@@ -170,16 +174,16 @@ void DrawEntity(Entity& entity){
 void MouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+        lastX=xpos;
+        lastY=ypos;
+        firstMouse=0;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed Y
+    float xoffset=xpos-lastX;
+    float yoffset=lastY-ypos;
 
-    lastX = xpos;
-    lastY = ypos;
+    lastX=xpos;
+    lastY=ypos;
 
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
@@ -267,6 +271,7 @@ int InitEngine(){
     glm::mat4 projection=glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 1000.0f);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, MouseCallback);
+    glfwSwapInterval(1);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     /*glEnable(GL_CULL_FACE);
