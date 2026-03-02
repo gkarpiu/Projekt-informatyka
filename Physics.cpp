@@ -7,9 +7,9 @@ const AABB playerHitbox={{0.0f, -0.6f, 0.0f}, {0.25f, 0.9f, 0.25f}};
 
 Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
-    this->p1 = p1;
-    this->p2 = p2;
-    this->p3 = p3;
+    this->p1=p1;
+    this->p2=p2;
+    this->p3=p3;
 
     glm::vec3 t1=p2-p1;
     glm::vec3 t2=p3-p1;
@@ -47,12 +47,12 @@ bool TakeInput(GLFWwindow* window, float& x, float& y, float& z)
 }
 
 //https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html
-bool TestIntersect(Triangle triangle, const AABB& aabb)
+bool TestIntersect(Triangle triangle, const AABB& aabb, glm::vec3 playerPos)
 {
     //centering triangle
-    triangle.p1-=aabb.position;
-    triangle.p2-=aabb.position;
-    triangle.p3-=aabb.position;
+    triangle.p1-=aabb.position+playerPos;
+    triangle.p2-=aabb.position+playerPos;
+    triangle.p3-=aabb.position+playerPos;
     //triangle edges
     glm::vec3 ev1=triangle.p2-triangle.p1;
     glm::vec3 ev2=triangle.p3-triangle.p2;
@@ -100,22 +100,36 @@ bool testSAT(Triangle triangle, const AABB& aabb, glm::vec3 axis)
             aabb.extents.z*std::abs(glm::dot(glm::vec3(0.0f, 0.0f, 1.0f), axis));
     float maxProj=std::max(std::max(proj1, proj2), proj3);
     float minProj=std::min(std::min(proj1, proj2), proj3);
-    return !(maxProj < -r || minProj > r);
+    return !(maxProj<-r || minProj>r);
 }
 
 void DoMovement(Camera& camera, GLFWwindow* window)
 {
     float xoffset=0, yoffset=0, zoffset=0;
-    if(TakeInput(window, xoffset, yoffset, zoffset)) 
-    {
-        camera.updatePosition(xoffset, yoffset, zoffset);
-    }
-    for(Triangle triangle: collisions)
-    {
-        if(TestIntersect(triangle, {playerHitbox.position+camera.Position, playerHitbox.extents}))
-        {
-            std::cout<<"colliding\n";
-            break;
+    if(TakeInput(window, xoffset, yoffset, zoffset)){
+        camera.updatePosition(xoffset, 0.0f, 0.0f);
+        for(Triangle triangle: collisions){
+            if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)){
+                std::cout<<"collides";
+                camera.updatePosition(-xoffset, 0.0f, 0.0f);
+                break;
+            }
+        }
+        camera.updatePosition(0.0f, yoffset, 0.0f);
+        for(Triangle triangle: collisions){
+            if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)){
+                std::cout<<"collides";
+                camera.updatePosition(0.0f, -yoffset, 0.0f);
+                break;
+            }
+        }
+        camera.updatePosition(0.0f, 0.0f, zoffset);
+        for(Triangle triangle: collisions){
+            if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)){
+                std::cout<<"collides";
+                camera.updatePosition(0.0f, 0.0f, -zoffset);
+                break;
+            }
         }
     }
 }
