@@ -107,7 +107,7 @@ int LoadObject(std::string name){
             ss>>tuv.back().x>>tuv.back().y;
         }else if(type=="f"){
             std::string vd;
-            std::vector<glm::vec3> points(3);
+            std::vector<glm::vec3> points;
             points.clear();
             while(ss>>vd){
                 std::istringstream vs(vd);

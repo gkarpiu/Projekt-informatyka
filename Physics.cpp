@@ -1,11 +1,16 @@
 #include "Physics.h"
+#include <iostream>
 
 const float PLAYER_SPEED=0.1f;
 std::vector<Triangle> collisions;
-const AABB playerHitbox={{0.0f, 0.0f, 0.0f}, {0.25f, 1.0f, 0.25f}};
+const AABB playerHitbox={{0.0f, -0.6f, 0.0f}, {0.25f, 0.9f, 0.25f}};
 
 Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
+    this->p1 = p1;
+    this->p2 = p2;
+    this->p3 = p3;
+
     glm::vec3 t1=p2-p1;
     glm::vec3 t2=p3-p1;
     normal=glm::normalize(glm::cross(t1,t2));
@@ -44,11 +49,11 @@ bool TakeInput(GLFWwindow* window, float& x, float& y, float& z)
 //https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html
 bool TestIntersect(Triangle triangle, const AABB& aabb)
 {
-    //centering tringle
+    //centering triangle
     triangle.p1-=aabb.position;
     triangle.p2-=aabb.position;
     triangle.p3-=aabb.position;
-    //tringle edges
+    //triangle edges
     glm::vec3 ev1=triangle.p2-triangle.p1;
     glm::vec3 ev2=triangle.p3-triangle.p2;
     glm::vec3 ev3=triangle.p1-triangle.p3;
@@ -79,7 +84,7 @@ bool TestIntersect(Triangle triangle, const AABB& aabb)
 
     for(glm::vec3 axis: axes)
     {
-        if(glm::length(axis) < 1e-8f) continue;
+        if(glm::length(axis)<1e-8f) continue;
         if(!testSAT(triangle, aabb, axis)) return 0;
     }
     return 1;
@@ -109,10 +114,7 @@ void DoMovement(Camera& camera, GLFWwindow* window)
     {
         if(TestIntersect(triangle, {playerHitbox.position+camera.Position, playerHitbox.extents}))
         {
-            xoffset=0.0f;
-            yoffset=0.1f;
-            zoffset=0.0f;
-            camera.updatePosition(xoffset, yoffset, zoffset);
+            std::cout<<"colliding\n";
             break;
         }
     }
