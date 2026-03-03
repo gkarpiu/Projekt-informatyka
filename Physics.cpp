@@ -107,29 +107,14 @@ void DoMovement(Camera& camera, GLFWwindow* window)
 {
     float xoffset=0, yoffset=0, zoffset=0;
     if(TakeInput(window, xoffset, yoffset, zoffset)){
-        camera.updatePosition(xoffset, 0.0f, 0.0f);
-        for(Triangle triangle: collisions){
-            if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)){
-                std::cout<<"collides";
-                camera.updatePosition(-xoffset, 0.0f, 0.0f);
-                break;
+        glm::vec3 velocity=camera.ToCamVector(xoffset, yoffset, zoffset);
+        for(int i=0; i<3; i++){
+            for(Triangle triangle: collisions){
+                if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position+velocity)){
+                    velocity=velocity-glm::dot(velocity, triangle.normal)*triangle.normal;
+                }
             }
         }
-        camera.updatePosition(0.0f, yoffset, 0.0f);
-        for(Triangle triangle: collisions){
-            if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)){
-                std::cout<<"collides";
-                camera.updatePosition(0.0f, -yoffset, 0.0f);
-                break;
-            }
-        }
-        camera.updatePosition(0.0f, 0.0f, zoffset);
-        for(Triangle triangle: collisions){
-            if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)){
-                std::cout<<"collides";
-                camera.updatePosition(0.0f, 0.0f, -zoffset);
-                break;
-            }
-        }
+        camera.updatePosition(velocity);
     }
 }

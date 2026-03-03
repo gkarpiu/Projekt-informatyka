@@ -26,8 +26,8 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset)
     Pitch += yoffset;
 
     // Prevent flipping
-    if (Pitch > 89.9f)  Pitch = 89.9f;
-    if (Pitch < -89.9f) Pitch = -89.9f;
+    if (Pitch>89.9f)  Pitch=89.9f;
+    if (Pitch<-89.9f) Pitch=-89.9f;
 
     updateCameraVectors();
 }
@@ -45,7 +45,10 @@ void Camera::updateCameraVectors()
     Up=glm::normalize(glm::cross(Right, Front));
 }
 
-void Camera::updatePosition(float xpos, float ypos, float zpos)
-{
-    Position+=xpos*Right+ypos*WorldUp+zpos*FlatFront;
+void Camera::updatePosition(glm::vec3 pos){
+    Position+=pos;
+}
+
+glm::vec3 Camera::ToCamVector(float xpos, float ypos, float zpos){
+    return xpos*Right+ypos*WorldUp+zpos*FlatFront;
 }
