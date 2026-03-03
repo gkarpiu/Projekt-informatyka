@@ -38,6 +38,8 @@ struct Renderer{
 struct Mesh{
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
+    size_t hitboxId;
+    size_t hitboxSize;
 };
 struct Texture{
     GLuint id;

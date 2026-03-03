@@ -4,12 +4,12 @@
 int main(){
     InitEngine();
 
-    int mesh1=LoadObject("test.obj");
+    int mesh1=LoadObject("thatthing.obj");
 
     size_t e1=AddEntity(mesh1);
     size_t e2=AddEntity(mesh1);
 
-    //entities[e1].transform=glm::translate(entities[e1].transform, {10, 10, 10});
+    entities[e1].transform=glm::translate(entities[e1].transform, {10, 10, 10});
 
     //Render loop
     while(!ShouldClose())
