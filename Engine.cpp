@@ -264,7 +264,7 @@ int InitEngine(){
     viewLoc=glGetUniformLocation(shaderProgram, "view");
     projLoc=glGetUniformLocation(shaderProgram, "projection");
 
-    Texture texture=LoadTexture("atlas.png");
+    Texture texture=LoadTexture("noise.png");
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
     glViewport(0, 0, WINDOW_WIDTH*WINDOW_SCALE, WINDOW_HEIGHT*WINDOW_SCALE);
@@ -274,12 +274,13 @@ int InitEngine(){
     glfwSwapInterval(1);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    /*glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);*/
+    glFrontFace(GL_CW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glClearColor(0.3f, 0.1f, 0.5f, 1.0f);                                   //bg color
+    //glClearColor(0.3f, 0.1f, 0.5f, 1.0f); 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);                                  //bg color
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.id);
 
