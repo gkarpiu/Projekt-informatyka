@@ -276,7 +276,7 @@ int InitEngine(){
     viewLoc=glGetUniformLocation(shaderProgram, "view");
     projLoc=glGetUniformLocation(shaderProgram, "projection");
 
-    Texture texture=LoadTexture("noise.png");
+    Texture texture=LoadTexture("concrete.png");
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
     glViewport(0, 0, WINDOW_WIDTH*WINDOW_SCALE, WINDOW_HEIGHT*WINDOW_SCALE);
