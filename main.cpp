@@ -1,4 +1,3 @@
-#include "engine.h"
 #include "Physics.h"
 
 int main(){
@@ -6,8 +5,8 @@ int main(){
 
     int mesh1=LoadObject("thatthing.obj");
 
-    size_t e1=AddEntity(mesh1);
-    size_t e2=AddEntity(mesh1);
+    size_t e1=AddEntity(mesh1, mesh1);
+    size_t e2=AddEntity(mesh1, mesh1);
 
     entities[e1].transform=glm::translate(entities[e1].transform, {10, 10, 10});
 

@@ -1,20 +1,7 @@
 #include "Physics.h"
-#include <iostream>
 
 const float PLAYER_SPEED=0.1f;
-std::vector<Triangle> collisions;
 const AABB playerHitbox={{0.0f, -0.6f, 0.0f}, {0.25f, 0.9f, 0.25f}};
-
-Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
-{
-    this->p1=p1;
-    this->p2=p2;
-    this->p3=p3;
-
-    glm::vec3 t1=p2-p1;
-    glm::vec3 t2=p3-p1;
-    normal=glm::normalize(glm::cross(t1,t2));
-}
 
 bool TakeInput(GLFWwindow* window, float& x, float& y, float& z)
 {
@@ -108,9 +95,14 @@ void DoMovement(Camera& camera, GLFWwindow* window)
     float xoffset=0, yoffset=0, zoffset=0;
     if(TakeInput(window, xoffset, yoffset, zoffset)){
         glm::vec3 velocity=camera.ToCamVector(xoffset, yoffset, zoffset);
-        for(Triangle triangle: collisions){
-            if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position+velocity)){
-                velocity=velocity-glm::dot(velocity, triangle.normal)*triangle.normal;
+        for(Entity e: entities){
+            for(Triangle triangle : collisions[e.hitbox]){
+                triangle.p1+=glm::vec3(e.transform[3]);
+                triangle.p2+=glm::vec3(e.transform[3]);
+                triangle.p3+=glm::vec3(e.transform[3]);
+                if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position+velocity)){
+                    velocity=velocity-glm::dot(velocity, triangle.normal)*triangle.normal;
+                }
             }
         }
         camera.updatePosition(velocity);

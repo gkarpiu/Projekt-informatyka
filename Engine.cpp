@@ -46,8 +46,19 @@ bool firstMouse;
 float lastX, lastY;
 std::vector<Renderer> meshes;
 std::vector<Entity> entities;
+std::vector<std::vector<Triangle>> collisions;
 
 Camera camera;
+
+Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3){
+    this->p1=p1;
+    this->p2=p2;
+    this->p3=p3;
+
+    glm::vec3 t1=p2-p1;
+    glm::vec3 t2=p3-p1;
+    normal=glm::normalize(glm::cross(t1,t2));
+}
 
 Texture LoadTexture(const char* path){
     Texture texture;
@@ -84,6 +95,7 @@ Texture LoadTexture(const char* path){
 
 int LoadObject(std::string name){
     Mesh mesh;
+    collisions.emplace_back();
     std::vector<glm::vec3> tpos;
     std::vector<glm::vec3> tnor;
     std::vector<glm::vec2> tuv;
@@ -122,7 +134,7 @@ int LoadObject(std::string name){
                 mesh.indices.emplace_back(mesh.vertices.size()-1);
                 points.push_back(tpos[posId]);
             }
-            collisions.push_back({points[0], points[1], points[2]});
+            collisions.back().push_back({points[0], points[1], points[2]});
         }
     }
     inf.close();
@@ -159,8 +171,8 @@ void UploadMesh(Mesh& mesh, Renderer& renderer){
     glBindVertexArray(0);
 }
 
-size_t AddEntity(size_t mesh){
-    entities.push_back({mesh, glm::mat4(1.0f)});
+size_t AddEntity(size_t mesh, size_t hitbox){
+    entities.push_back({glm::mat4(1.0f), mesh, hitbox});
     return entities.size()-1;
 }
 
@@ -306,10 +318,10 @@ void DoDrawing(Camera& camera){
 }
 
 void CloseEngine(){
-    for(Entity& e : entities){
-        glDeleteVertexArrays(1, &meshes[e.mesh].VAO);
-        glDeleteBuffers(1, &meshes[e.mesh].VBO);
-        glDeleteBuffers(1, &meshes[e.mesh].EBO);
+    for(Renderer r : meshes){
+        glDeleteVertexArrays(1, &r.VAO);
+        glDeleteBuffers(1, &r.VBO);
+        glDeleteBuffers(1, &r.EBO);
     }
 
     glDeleteProgram(shaderProgram);

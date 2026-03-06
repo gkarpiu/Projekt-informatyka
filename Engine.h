@@ -13,7 +13,6 @@
 #include <string>
 #include <sstream>
 #include "Camera.h"
-#include "Physics.h"
 
 constexpr int WINDOW_WIDTH=1920;
 constexpr int WINDOW_HEIGHT=1080;
@@ -21,6 +20,14 @@ constexpr int WINDOW_HEIGHT=1080;
 extern const char* vertexShaderSource;
 extern const char* fragmentShaderSource;
 
+struct Triangle{
+    glm::vec3 p1;
+    glm::vec3 p2;
+    glm::vec3 p3;
+    glm::vec3 normal;
+
+    Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+};
 struct Vertex{
     glm::vec3 position;
     glm::vec3 normal;
@@ -38,8 +45,6 @@ struct Renderer{
 struct Mesh{
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
-    size_t hitboxId;
-    size_t hitboxSize;
 };
 struct Texture{
     GLuint id;
@@ -47,8 +52,9 @@ struct Texture{
     int height;
 };
 struct Entity{
-    size_t mesh;
     glm::mat4 transform;
+    size_t mesh;
+    size_t hitbox;
 };
 
 extern int WINDOW_SCALE;
@@ -61,13 +67,14 @@ extern bool firstMouse;
 extern float lastX, lastY;
 extern std::vector<Renderer> meshes;
 extern std::vector<Entity> entities;
+extern std::vector<std::vector<Triangle>> collisions;
 
 extern Camera camera;
 
 Texture LoadTexture(const char* path);
 int LoadObject(std::string name);
 void UploadMesh(Mesh& mesh, Renderer& renderer);
-size_t AddEntity(size_t mesh);
+size_t AddEntity(size_t mesh, size_t hitbox);
 void DrawEntity(Entity& entity);
 void MouseCallback(GLFWwindow* window, double xpos, double ypos);
 
