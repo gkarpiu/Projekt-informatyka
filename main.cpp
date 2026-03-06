@@ -13,9 +13,6 @@ int main(){
     //Render loop
     while(!ShouldClose())
     {
-        //entities[e1].transform=glm::rotate(entities[e1].transform, 0.01f, {1.0f, 1.0f, 1.0f});
-        //entities[e2].transform=glm::rotate(entities[e2].transform, -0.01f, {1.0f, 1.0f, 1.0f});
-
         DoMovement(camera, window);
 
         DoDrawing(camera);

@@ -213,7 +213,7 @@ int InitEngine(){
     GLFWmonitor* monitor=glfwGetPrimaryMonitor();
     const GLFWvidmode* mode=glfwGetVideoMode(monitor);
 
-    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     //WINDOW_SCALE=mode->width/WINDOW_WIDTH;
@@ -301,7 +301,10 @@ int InitEngine(){
 }
 
 bool ShouldClose(){
-    return glfwWindowShouldClose(window);
+    bool res=0;
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE)) res=1;
+    if(glfwWindowShouldClose(window)) res=1;
+    return res;
 }
 
 void DoDrawing(Camera& camera){
