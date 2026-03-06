@@ -130,7 +130,8 @@ int LoadObject(std::string name){
                 int uvId=std::stoi(ts)-1;
                 std::getline(vs, ts);
                 int norId=std::stoi(ts)-1;
-                mesh.vertices.push_back({tpos[posId], tnor[norId], tuv[uvId], 1.0f, 1.0f});
+                float t=1-((tnor[norId].y+1)/2);
+                mesh.vertices.push_back({tpos[posId], tnor[norId], tuv[uvId], 0.4f*t+1.0f*(1-t), 1.0f});
                 mesh.indices.emplace_back(mesh.vertices.size()-1);
                 points.push_back(tpos[posId]);
             }
