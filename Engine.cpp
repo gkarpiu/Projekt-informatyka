@@ -46,7 +46,7 @@ bool firstMouse;
 float lastX, lastY;
 std::vector<Renderer> meshes(1);
 std::vector<Entity> entities;
-std::vector<std::vector<Triangle>> collisions(1);
+std::vector<std::vector<Triangle>> collisions;
 
 Camera camera;
 
