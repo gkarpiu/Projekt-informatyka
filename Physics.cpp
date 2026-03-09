@@ -90,20 +90,41 @@ bool testSAT(Triangle triangle, const AABB& aabb, glm::vec3 axis)
     return !(maxProj<-r || minProj>r);
 }
 
-void DoMovement(Camera& camera, GLFWwindow* window)
-{
+bool CheckCollision(Entity& entity, Camera& camera){
+    for(Triangle triangle : collisions[entity.hitbox]){
+        triangle.p1=glm::vec3(entity.transform*glm::vec4(triangle.p1, 1.0f));
+        triangle.p2=glm::vec3(entity.transform*glm::vec4(triangle.p2, 1.0f));
+        triangle.p3=glm::vec3(entity.transform*glm::vec4(triangle.p3, 1.0f));
+        if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)) return 1;
+    }
+    return 0;
+}
+
+void ResolveCollision(Entity& entity, glm::vec3& velocity, Camera& camera){
+    for(Triangle triangle : collisions[entity.hitbox]){
+        triangle.p1=glm::vec3(entity.transform*glm::vec4(triangle.p1, 1.0f));
+        triangle.p2=glm::vec3(entity.transform*glm::vec4(triangle.p2, 1.0f));
+        triangle.p3=glm::vec3(entity.transform*glm::vec4(triangle.p3, 1.0f));
+        if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position+velocity)){
+            velocity=velocity-glm::dot(velocity, triangle.normal)*triangle.normal;
+        }
+    }
+}
+
+void CheckTriggers(Camera& camera, std::vector<size_t>& ids){
+    for(size_t i=0; i<entities.size(); i++){
+        if(!entities[i].trigger) continue;
+        if(CheckCollision(entities[i], camera)) ids.push_back(i);
+    }
+}
+
+void DoMovement(Camera& camera, GLFWwindow* window){
     float xoffset=0, yoffset=0, zoffset=0;
     if(TakeInput(window, xoffset, yoffset, zoffset)){
         glm::vec3 velocity=camera.ToCamVector(xoffset, yoffset, zoffset);
-        for(Entity e: entities){
-            for(Triangle triangle : collisions[e.hitbox]){
-                triangle.p1+=glm::vec3(e.transform[3]);
-                triangle.p2+=glm::vec3(e.transform[3]);
-                triangle.p3+=glm::vec3(e.transform[3]);
-                if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position+velocity)){
-                    velocity=velocity-glm::dot(velocity, triangle.normal)*triangle.normal;
-                }
-            }
+        for(Entity& e: entities){
+            if(e.trigger) continue;
+            ResolveCollision(e, velocity, camera);
         }
         camera.updatePosition(velocity);
     }

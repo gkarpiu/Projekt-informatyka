@@ -55,6 +55,7 @@ struct Entity{
     glm::mat4 transform;
     size_t mesh;
     size_t hitbox;
+    bool trigger;
 };
 
 extern int WINDOW_SCALE;
@@ -74,7 +75,7 @@ extern Camera camera;
 Texture LoadTexture(const char* path);
 int LoadObject(std::string name);
 void UploadMesh(Mesh& mesh, Renderer& renderer);
-size_t AddEntity(size_t mesh, size_t hitbox);
+size_t AddEntity(size_t mesh, size_t hitbox, bool trigger);
 void DrawEntity(Entity& entity);
 void MouseCallback(GLFWwindow* window, double xpos, double ypos);
 

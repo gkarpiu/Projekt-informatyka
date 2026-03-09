@@ -44,9 +44,9 @@ unsigned int projLoc;
 unsigned int shaderProgram;
 bool firstMouse;
 float lastX, lastY;
-std::vector<Renderer> meshes;
+std::vector<Renderer> meshes(1);
 std::vector<Entity> entities;
-std::vector<std::vector<Triangle>> collisions;
+std::vector<std::vector<Triangle>> collisions(1);
 
 Camera camera;
 
@@ -172,8 +172,8 @@ void UploadMesh(Mesh& mesh, Renderer& renderer){
     glBindVertexArray(0);
 }
 
-size_t AddEntity(size_t mesh, size_t hitbox){
-    entities.push_back({glm::mat4(1.0f), mesh, hitbox});
+size_t AddEntity(size_t mesh, size_t hitbox, bool trigger){
+    entities.push_back({glm::mat4(1.0f), mesh, hitbox, trigger});
     return entities.size()-1;
 }
 
