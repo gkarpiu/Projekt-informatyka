@@ -17,8 +17,8 @@ int main(){
     {
         //entities[e1].transform=glm::rotate(entities[e1].transform, 0.01f, {0, 1, 0});
         //entities[e2].transform=glm::rotate(entities[e2].transform, 0.01f, {-1, 0, 0});
-        DoMovement(camera, window);
 
+        DoMovement(camera, window);
         std::vector<size_t> triggerIds;
         CheckTriggers(camera, triggerIds);
         for(size_t id : triggerIds) std::cout<<"entity: "<<id<<" collided\n";

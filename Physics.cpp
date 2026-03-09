@@ -1,9 +1,10 @@
 #include "Physics.h"
 
-const float PLAYER_SPEED=0.1f;
+const float PLAYER_SPEED=0.3f;
 const glm::vec3 gravity={0.0f, -0.05f, 0.0f};
-const AABB playerHitbox={{0.0f, -0.6f, 0.0f}, {0.25f, 0.9f, 0.25f}};
-const glm::vec3 spawnPoint={1000.0f, 0.0f, 0.0f};
+glm::vec3 playerVelocity={0.0f, 0.0f, 0.0f};
+const AABB playerHitbox={{0.0f, -1.0f, 0.0f}, {0.25f, 1.4f, 0.25f}};
+const glm::vec3 spawnPoint={33.4f, -7.0f, 73.0f};
 
 bool TakeInput(GLFWwindow* window, float& x, float& y, float& z)
 {
@@ -121,9 +122,9 @@ void CheckTriggers(Camera& camera, std::vector<size_t>& ids){
 }
 
 void DoMovement(Camera& camera, GLFWwindow* window){
-    float xoffset=0, yoffset=0, zoffset=0;
-    if(TakeInput(window, xoffset, yoffset, zoffset)){
-        glm::vec3 velocity=camera.ToCamVector(xoffset, yoffset, zoffset);
+    glm::vec3 offset={0.0f, 0.0f, 0.0f };
+    if(TakeInput(window, offset.x, offset.y, offset.z)){
+        glm::vec3 velocity=camera.ToCamVector(offset.x, offset.y, offset.z);
         for(Entity& e: entities){
             if(e.trigger) continue;
             ResolveCollision(e, velocity, camera);
