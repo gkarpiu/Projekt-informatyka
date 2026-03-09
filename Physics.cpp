@@ -1,7 +1,9 @@
 #include "Physics.h"
 
 const float PLAYER_SPEED=0.1f;
+const glm::vec3 gravity={0.0f, -0.05f, 0.0f};
 const AABB playerHitbox={{0.0f, -0.6f, 0.0f}, {0.25f, 0.9f, 0.25f}};
+const glm::vec3 spawnPoint={1000.0f, 0.0f, 0.0f};
 
 bool TakeInput(GLFWwindow* window, float& x, float& y, float& z)
 {

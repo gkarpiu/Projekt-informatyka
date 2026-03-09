@@ -10,7 +10,9 @@ struct AABB{
 };
 
 extern const float PLAYER_SPEED;
+extern const glm::vec3 gravity;
 extern const AABB playerHitbox;
+extern const glm::vec3 spawnPoint;
 
 void DoMovement(Camera& camera, GLFWwindow* window);
 

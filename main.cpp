@@ -10,6 +10,8 @@ int main(){
 
     entities[e1].transform=glm::translate(entities[e1].transform, {10, 10, 10});
 
+    camera.Position=spawnPoint;
+
     //Render loop
     while(!ShouldClose())
     {
