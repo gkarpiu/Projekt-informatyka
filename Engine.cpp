@@ -3,7 +3,7 @@
 
 #include "engine.h"
 
-const char* vertexShaderSource=
+const char* worldvertexShaderSource=
 "#version 460 core\n"
 "layout (location=0) in vec3 aPos;\n"
 "layout (location=1) in vec2 aUV;\n"
@@ -23,7 +23,38 @@ const char* vertexShaderSource=
 "    gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
 "}\n";
 
-const char* fragmentShaderSource=
+const char* worldfragmentShaderSource=
+"#version 460 core\n"
+"out vec4 FragColor;\n"
+"in vec2 vUV;\n"
+"in float vLight;\n"
+"in float vAlpha;\n"
+"uniform sampler2D tex;\n"
+"void main()\n"
+"{\n"
+"    vec4 t = texture(tex, vUV);\n"
+"    FragColor = vec4(t.rgb*vLight, t.a*vAlpha);\n"
+"}\n";
+
+const char* uivertexShaderSource=
+"#version 460 core\n"
+"layout (location=0) in vec3 aPos;\n"
+"layout (location=1) in vec2 aUV;\n"
+"layout (location=2) in float aLight;\n"
+"layout (location=3) in float aAlpha;\n"
+"uniform mat4 projection;\n"
+"out float vLight;\n"
+"out vec2 vUV;\n"
+"out float vAlpha;\n"
+"void main()\n"
+"{\n"
+"    vLight = aLight;\n"
+"    vUV = aUV;\n"
+"    vAlpha = aAlpha;\n"
+"    gl_Position = projection * vec4(aPos, 1.0);\n"
+"}\n";
+
+const char* uifragmentShaderSource=
 "#version 460 core\n"
 "out vec4 FragColor;\n"
 "in vec2 vUV;\n"
@@ -40,13 +71,18 @@ int WINDOW_SCALE=1;
 GLFWwindow* window=nullptr;
 unsigned int modelLoc;
 unsigned int viewLoc;
-unsigned int projLoc;
-unsigned int shaderProgram;
+unsigned int worldprojLoc;
+unsigned int uiprojLoc;
+unsigned int worldshaderProgram;
+unsigned int uishaderProgram;
 bool firstMouse=1;
 float lastX, lastY;
 std::vector<Renderer> meshes(1);
 std::vector<Entity> entities;
+std::vector<Texture> textures;
 std::vector<std::vector<Triangle>> collisions(1);
+glm::mat4 worldprojection=glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 1000.0f);
+glm::mat4 uiprojection=glm::ortho(0, 1920, 0, 1080);
 
 Camera camera;
 
@@ -60,26 +96,26 @@ Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3){
     normal=glm::normalize(glm::cross(t1,t2));
 }
 
-Texture LoadTexture(const char* path){
-    Texture texture;
+size_t LoadTexture(const char* path){
+    textures.emplace_back();
     int channels;
 
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned char* data=stbi_load(path, &texture.width, &texture.height, &channels, 0);
+    unsigned char* data=stbi_load(path, &textures.back().width, &textures.back().height, &channels, 0);
     if(!data){
         std::cout<<"Failed to load texture\n";
-        return {0,0,0};
+        return -1;
     }
 
     GLenum format=GL_RGB;
     if(channels==4)
         format=GL_RGBA;
 
-    glGenTextures(1, &texture.id);
-    glBindTexture(GL_TEXTURE_2D, texture.id);
+    glGenTextures(1, &textures.back().id);
+    glBindTexture(GL_TEXTURE_2D, textures.back().id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, format, texture.width, texture.height, 0, format,  GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, textures.back().width, textures.back().height, 0, format,  GL_UNSIGNED_BYTE, data);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -89,8 +125,8 @@ Texture LoadTexture(const char* path){
 
     stbi_image_free(data);
     
-    std::cout<<"Texture size: "<<texture.width<<"x"<<texture.height<<" Channels: "<<channels<<"\n";
-    return texture;
+    std::cout<<"Texture size: "<<textures.back().width<<"x"<<textures.back().height<<" Channels: "<<channels<<"\n";
+    return textures.size()-1;
 }
 
 int LoadObject(std::string name){
@@ -172,8 +208,8 @@ void UploadMesh(Mesh& mesh, Renderer& renderer){
     glBindVertexArray(0);
 }
 
-size_t AddEntity(size_t mesh, size_t hitbox, bool trigger){
-    entities.push_back({glm::mat4(1.0f), mesh, hitbox, trigger});
+size_t AddEntity(size_t mesh, size_t hitbox, size_t texture, bool trigger){
+    entities.push_back({glm::mat4(1.0f), mesh, hitbox, texture, trigger});
     return entities.size()-1;
 }
 
@@ -236,52 +272,93 @@ int InitEngine(){
     int success;
     char infoLog[512];
 
-    //Compile vertex shader
-    unsigned int vertexShader=glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
+    //Compile world vertex shader
+    unsigned int worldvertexShader=glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(worldvertexShader, 1, &worldvertexShaderSource, nullptr);
+    glCompileShader(worldvertexShader);
 
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(worldvertexShader, GL_COMPILE_STATUS, &success);
     if(!success){
-        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
+        glGetShaderInfoLog(worldvertexShader, 512, nullptr, infoLog);
         std::cout<<"VERTEX SHADER ERROR:\n"<<infoLog<<std::endl;
     }
 
-    unsigned int fragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
+    //Compile ui vertex shader
+    unsigned int uivertexShader=glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(uivertexShader, 1, &uivertexShaderSource, nullptr);
+    glCompileShader(uivertexShader);
 
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(uivertexShader, GL_COMPILE_STATUS, &success);
     if(!success){
-        glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+        glGetShaderInfoLog(uivertexShader, 512, nullptr, infoLog);
+        std::cout<<"VERTEX SHADER ERROR:\n"<<infoLog<<std::endl;
+    }
+
+    //Compile world fragment shader
+    unsigned int worldfragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(worldfragmentShader, 1, &worldfragmentShaderSource, nullptr);
+    glCompileShader(worldfragmentShader);
+
+    glGetShaderiv(worldfragmentShader, GL_COMPILE_STATUS, &success);
+    if(!success){
+        glGetShaderInfoLog(worldfragmentShader, 512, nullptr, infoLog);
         std::cout<<"FRAGMENT SHADER ERROR:\n"<<infoLog<<std::endl;
     }
 
-    //Link shaders into a program
-    shaderProgram=glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    //Compile ui fragment shader
+    unsigned int uifragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(uifragmentShader, 1, &uifragmentShaderSource, nullptr);
+    glCompileShader(uifragmentShader);
 
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetShaderiv(uifragmentShader, GL_COMPILE_STATUS, &success);
     if(!success){
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+        glGetShaderInfoLog(uifragmentShader, 512, nullptr, infoLog);
+        std::cout<<"FRAGMENT SHADER ERROR:\n"<<infoLog<<std::endl;
+    }
+
+    //Link world shaders into a program
+    worldshaderProgram=glCreateProgram();
+    glAttachShader(worldshaderProgram, worldvertexShader);
+    glAttachShader(worldshaderProgram, worldfragmentShader);
+    glLinkProgram(worldshaderProgram);
+
+    glGetProgramiv(worldshaderProgram, GL_LINK_STATUS, &success);
+    if(!success){
+        glGetProgramInfoLog(worldshaderProgram, 512, nullptr, infoLog);
         std::cout<<"PROGRAM LINK ERROR:\n"<<infoLog<<std::endl;
     }
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    //Link ui shaders into a program
+    uishaderProgram=glCreateProgram();
+    glAttachShader(uishaderProgram, uivertexShader);
+    glAttachShader(uishaderProgram, uifragmentShader);
+    glLinkProgram(uishaderProgram);
 
-    glUseProgram(shaderProgram);
-    modelLoc=glGetUniformLocation(shaderProgram, "model");
-    viewLoc=glGetUniformLocation(shaderProgram, "view");
-    projLoc=glGetUniformLocation(shaderProgram, "projection");
+    glGetProgramiv(uishaderProgram, GL_LINK_STATUS, &success);
+    if(!success){
+        glGetProgramInfoLog(uishaderProgram, 512, nullptr, infoLog);
+        std::cout<<"PROGRAM LINK ERROR:\n"<<infoLog<<std::endl;
+    }
 
-    Texture texture=LoadTexture("concrete.png");
-    glUseProgram(shaderProgram);
-    glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
+    glDeleteShader(worldvertexShader);
+    glDeleteShader(worldfragmentShader);
+    glDeleteShader(uivertexShader);
+    glDeleteShader(uifragmentShader);
+
+    glUseProgram(worldshaderProgram);
+    modelLoc=glGetUniformLocation(worldshaderProgram, "model");
+    viewLoc=glGetUniformLocation(worldshaderProgram, "view");
+    worldprojLoc=glGetUniformLocation(worldshaderProgram, "projection");
+    glUniform1i(glGetUniformLocation(worldshaderProgram, "tex"), 0);
+    glUniformMatrix4fv(worldprojLoc, 1, GL_FALSE, glm::value_ptr(worldprojection));
+
+    glUseProgram(uishaderProgram);
+    uiprojLoc=glGetUniformLocation(uishaderProgram, "projection");
+    glUniform1i(glGetUniformLocation(uishaderProgram, "tex"), 0);
+    glUniformMatrix4fv(uiprojLoc, 1, GL_FALSE, glm::value_ptr(uiprojection));
+
+
     glViewport(0, 0, WINDOW_WIDTH*WINDOW_SCALE, WINDOW_HEIGHT*WINDOW_SCALE);
-    glm::mat4 projection=glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 1000.0f);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, MouseCallback);
     glfwSwapInterval(1);
@@ -291,11 +368,8 @@ int InitEngine(){
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
     //glClearColor(0.3f, 0.1f, 0.5f, 1.0f); 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);                                  //bg color
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture.id);
 
     return 0;
 }
@@ -309,13 +383,18 @@ bool ShouldClose(){
 
 void DoDrawing(Camera& camera){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(worldshaderProgram);
 
     glm::mat4 view=camera.GetViewMatrix();
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     
     for(Entity& e : entities){
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures[e.texture].id);
         DrawEntity(e);
     }
+
+    glUseProgram(uishaderProgram);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -328,7 +407,7 @@ void CloseEngine(){
         glDeleteBuffers(1, &r.EBO);
     }
 
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(worldshaderProgram);
     glfwTerminate();
 }
 

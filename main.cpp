@@ -3,10 +3,12 @@
 int main(){
     InitEngine();
 
+    size_t tex=LoadTexture("concrete.png");
+
     size_t mesh1=LoadObject("alo.obj");
 
-    size_t e1=AddEntity(mesh1, mesh1, 0);
-    //size_t e2=AddEntity(mesh1, mesh1, 0);
+    size_t e1=AddEntity(mesh1, mesh1, tex, 0);
+    //size_t e2=AddEntity(mesh1, mesh1, tex, 0);
 
     entities[e1].transform=glm::translate(entities[e1].transform, {10, 10, 10});
 

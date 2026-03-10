@@ -17,8 +17,11 @@
 constexpr int WINDOW_WIDTH=1920;
 constexpr int WINDOW_HEIGHT=1080;
 
-extern const char* vertexShaderSource;
-extern const char* fragmentShaderSource;
+extern const char* worldvertexShaderSource;
+extern const char* worldfragmentShaderSource;
+
+extern const char* uivertexShaderSource;
+extern const char* uifragmentShaderSource;
 
 struct Triangle{
     glm::vec3 p1;
@@ -55,6 +58,7 @@ struct Entity{
     glm::mat4 transform;
     size_t mesh;
     size_t hitbox;
+    size_t texture;
     bool trigger;
 };
 
@@ -62,20 +66,25 @@ extern int WINDOW_SCALE;
 extern GLFWwindow* window;
 extern unsigned int modelLoc;
 extern unsigned int viewLoc;
-extern unsigned int projLoc;
-extern unsigned int shaderProgram;
+extern unsigned int worldprojLoc;
+extern unsigned int uiprojLoc;
+extern unsigned int worldshaderProgram;
+extern unsigned int uishaderProgram;
 extern bool firstMouse;
 extern float lastX, lastY;
 extern std::vector<Renderer> meshes;
 extern std::vector<Entity> entities;
+extern std::vector<Texture> textures;
 extern std::vector<std::vector<Triangle>> collisions;
+extern glm::mat4 worldprojection;
+extern glm::mat4 uiprojection;
 
 extern Camera camera;
 
-Texture LoadTexture(const char* path);
+size_t LoadTexture(const char* path);
 int LoadObject(std::string name);
 void UploadMesh(Mesh& mesh, Renderer& renderer);
-size_t AddEntity(size_t mesh, size_t hitbox, bool trigger);
+size_t AddEntity(size_t mesh, size_t hitbox, size_t texture, bool trigger);
 void DrawEntity(Entity& entity);
 void MouseCallback(GLFWwindow* window, double xpos, double ypos);
 
