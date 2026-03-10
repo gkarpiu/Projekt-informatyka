@@ -42,7 +42,7 @@ unsigned int modelLoc;
 unsigned int viewLoc;
 unsigned int projLoc;
 unsigned int shaderProgram;
-bool firstMouse;
+bool firstMouse=1;
 float lastX, lastY;
 std::vector<Renderer> meshes(1);
 std::vector<Entity> entities;
@@ -277,7 +277,7 @@ int InitEngine(){
     viewLoc=glGetUniformLocation(shaderProgram, "view");
     projLoc=glGetUniformLocation(shaderProgram, "projection");
 
-    Texture texture=LoadTexture("kotek2.png");
+    Texture texture=LoadTexture("concrete.png");
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
     glViewport(0, 0, WINDOW_WIDTH*WINDOW_SCALE, WINDOW_HEIGHT*WINDOW_SCALE);
