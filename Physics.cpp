@@ -105,6 +105,9 @@ bool CheckCollision(Entity& entity, Camera& camera){
 
 void ResolveCollision(Entity& entity, glm::vec3& velocity, Camera& camera){
     for(Triangle triangle : collisions[entity.hitbox]){
+
+        if(glm::dot(velocity, triangle.normal)>=0.0f) continue; //dont check if moving away from triangle
+
         triangle.p1=glm::vec3(entity.transform*glm::vec4(triangle.p1, 1.0f));
         triangle.p2=glm::vec3(entity.transform*glm::vec4(triangle.p2, 1.0f));
         triangle.p3=glm::vec3(entity.transform*glm::vec4(triangle.p3, 1.0f));

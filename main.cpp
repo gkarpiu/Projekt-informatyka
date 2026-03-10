@@ -5,7 +5,7 @@ int main(){
 
     size_t tex=LoadTexture("concrete.png");
 
-    size_t mesh1=LoadObject("alo.obj");
+    size_t mesh1=LoadObject("ALO.obj");
 
     size_t e1=AddEntity(mesh1, mesh1, tex, 0);
     //size_t e2=AddEntity(mesh1, mesh1, tex, 0);
