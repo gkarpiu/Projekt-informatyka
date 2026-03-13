@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "Camera.h"
 #include "Engine.h"
 
 struct AABB{
