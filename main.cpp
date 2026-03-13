@@ -3,12 +3,15 @@
 int main(){
     InitEngine();
 
-    size_t tex=LoadTexture("concrete.png");
+    //make sure to add texture to "textures" folder
+    size_t texConcrete=LoadTexture("concrete.png");
+    size_t texWood=LoadTexture("wood.png");
+    size_t texPlastic=LoadTexture("plastic.png");
 
-    size_t mesh1=LoadObject("ALO.obj");
+    size_t mesh1=LoadObject("thatthing.obj");
 
-    size_t e1=AddEntity(mesh1, mesh1, tex, 0);
-    //size_t e2=AddEntity(mesh1, mesh1, tex, 0);
+    size_t e1=AddEntity(mesh1, mesh1, texConcrete, 0);
+    size_t e2=AddEntity(mesh1, mesh1, texWood, 0);
 
     entities[e1].transform=glm::translate(entities[e1].transform, {10, 10, 10});
 
