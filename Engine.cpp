@@ -104,7 +104,7 @@ size_t LoadTexture(const char* path){
     stbi_set_flip_vertically_on_load(true);
 
     std::cout<<"Loading texture "<<path<<"\n";
-    std::vector<std::string> paths={"./textures/", ""};
+    std::vector<std::string> paths={"./textures/", "./textures/uiStuff/", ""};
     unsigned char* data;
     for(std::string p : paths){
         data=stbi_load((p + path).c_str(), &textures.back().width, &textures.back().height, &channels, 0);
