@@ -103,15 +103,19 @@ size_t LoadTexture(const char* path){
 
     stbi_set_flip_vertically_on_load(true);
 
-    std::cout<<"Loading texture "<<("./textures/" + std::string(path)).c_str()<<"\n";
-    unsigned char* data=stbi_load(("./textures/" + std::string(path)).c_str(), &textures.back().width, &textures.back().height, &channels, 0);
-    if(!data){
-        std::cout<<"Failed, loading from "<<path<<"\n";
-        data=stbi_load(path, &textures.back().width, &textures.back().height, &channels, 0);
-        if(!data){
-            std::cout<<"Failed to load texture\n";
-            return -1;
+    std::cout<<"Loading texture "<<path<<"\n";
+    std::vector<std::string> paths={"./textures/", ""};
+    unsigned char* data;
+    for(std::string p : paths){
+        data=stbi_load((p + path).c_str(), &textures.back().width, &textures.back().height, &channels, 0);
+        if(data){
+            std::cout<<"Loaded from "<<(p + path).c_str()<<"\n";
+            break;
         }
+    }
+    if(!data){
+        std::cout<<"Failed to load texture "<<path<<"\n";
+        return -1;
     }
 
     GLenum format=GL_RGB;
