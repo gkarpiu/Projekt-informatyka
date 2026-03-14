@@ -1,6 +1,7 @@
 # Room with inward facing walls + center block
 # Triangulated
 # Includes normals and 0-1 UVs
+# SCALE: 10x
 
 o Room
 
@@ -10,52 +11,51 @@ o Room
 
 # Floor
 v 0 0 0
-v 10 0 0
-v 10 0 10
-v 0 0 10
+v 100 0 0
+v 100 0 100
+v 0 0 100
 
 # Wall top
-v 0 5 0
-v 10 5 0
-v 10 5 10
-v 0 5 10
+v 0 50 0
+v 100 50 0
+v 100 50 100
+v 0 50 100
 
 # Block bottom
-v 4 0 4
-v 6 0 4
-v 6 0 6
-v 4 0 6
+v 40 0 40
+v 60 0 40
+v 60 0 60
+v 40 0 60
 
 # Block top
-v 4 2 4
-v 6 2 4
-v 6 2 6
-v 4 2 6
+v 40 20 40
+v 60 20 40
+v 60 20 60
+v 40 20 60
 
 ############################
 # NORMALS
 ############################
 
 # Room
-vn 0 1 0        # Floor (up)
-vn 0 0 1        # Wall Z-
-vn -1 0 0       # Wall X+
-vn 0 0 -1       # Wall Z+
-vn 1 0 0        # Wall X-
+vn 0 1 0
+vn 0 0 1
+vn -1 0 0
+vn 0 0 -1
+vn 1 0 0
 
 # Block
-vn 0 -1 0       # Bottom
-vn 0 1 0        # Top
-vn 0 0 -1       # Front
-vn 1 0 0        # Right
-vn 0 0 1        # Back
-vn -1 0 0       # Left
+vn 0 -1 0
+vn 0 1 0
+vn 0 0 -1
+vn 1 0 0
+vn 0 0 1
+vn -1 0 0
 
 ############################
-# UVs (0-1 per surface)
+# UVs
 ############################
 
-# Generic quad UVs
 vt 0 0
 vt 1 0
 vt 1 1

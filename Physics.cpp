@@ -1,44 +1,95 @@
 #include "Physics.h"
 
-const float playerAcceleration=0.1f;
+const float playerAcceleration=0.07f;
+const float playerSprintAcceleration=playerAcceleration*2.5f;
+const float playerCrouchAcceleration=playerAcceleration*0.5f;
 const float jumpStrength=0.3f;
+
+const float slideStrength=0.5f;
+bool isCrouching=0;
+float crouchTimer=1.0f;
+
 const glm::vec3 gravity={0.0f, -0.01f, 0.0f};
 glm::vec3 playerVelocity={0.0f, 0.0f, 0.0f};
-const AABB playerHitbox={{0.0f, -1.0f, 0.0f}, {0.25f, 1.4f, 0.25f}};
+
+const AABB playerDefaultHitbox={{0.0f, -1.0f, 0.0f}, {0.25f, 1.4f, 0.25f}};
+const AABB playerCrouchHitbox={{0.0f, -0.5f, 0.0f}, {0.25f, 0.7f, 0.25f}};
+const float hitboxDiff=playerDefaultHitbox.extents.y-playerCrouchHitbox.extents.y-(playerDefaultHitbox.position.y-playerCrouchHitbox.position.y);
+AABB playerHitbox=playerDefaultHitbox;
+
 //const glm::vec3 spawnPoint={33.4f, -7.0f, 73.0f};
 const glm::vec3 spawnPoint={0.0f, 0.0f, 0.0f};
 std::vector<Triangle> lastCollisions={};
+bool isOnGround=0;
 
 bool TakeInput(GLFWwindow* window, glm::vec3& offset)
 {
     bool moved=0;
+    bool crouchFirstPress=0;
+    float tmp=playerAcceleration;
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS)
+    {
+        tmp=playerCrouchAcceleration;
+        if(!isCrouching)
+        {
+            camera.Position.y-=hitboxDiff; //crouch
+            crouchFirstPress=1;
+        }
+        isCrouching=1;
+    }else{
+        if(isCrouching) camera.Position.y+=hitboxDiff; //uncrouch
+        isCrouching=0;
+    }
+    
+    
     if (glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS) {
-        offset.x+=playerAcceleration;
+        offset.x+=tmp;
         moved=1;
     }
     if (glfwGetKey(window, GLFW_KEY_A)==GLFW_PRESS) {
-        offset.x-=playerAcceleration;
+        offset.x-=tmp;
         moved=1;
     }
     if (glfwGetKey(window, GLFW_KEY_S)==GLFW_PRESS) {
-        offset.z-=playerAcceleration;
+        offset.z-=tmp;
         moved=1;
     }
     if (glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS) {
-        offset.z+=playerAcceleration;
+        if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS)
+        {
+            if(crouchFirstPress&&isOnGround) crouchTimer=0.0f;
+            if(!isCrouching) tmp=playerSprintAcceleration;
+        }
+        if(crouchTimer<1.0f&&(isCrouching||!isOnGround))
+        {
+            crouchTimer+=0.01f;
+            offset.z+=(1.0f-crouchTimer)*slideStrength;
+        }else offset.z+=tmp;
+
         moved=1;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS) {
-        for(Triangle triangle : lastCollisions){
-
-            if(triangle.normal.y<0.0f) continue; //triangle is downward facing
-            if(TestIntersect(triangle, playerHitbox, camera.Position+playerVelocity+gravity)){ //on ground
-                offset.y+=jumpStrength;
-                return 1; //break loop and return moved
-            }
+        if(isOnGround){
+            offset.y+=jumpStrength;
+            return 1;
         }
     }
     return moved;
+}
+
+bool IsGrounded(){
+    const AABB playerFeetHitbox=
+    {{playerHitbox.position.x, playerHitbox.position.y-playerHitbox.extents.y, playerHitbox.position.z},
+    {playerHitbox.extents.x, 0.1f, playerHitbox.extents.z}};
+    for(Triangle triangle : lastCollisions){
+
+            if(triangle.normal.y<0.0f) continue; //triangle is downward facing
+            if(TestIntersect(triangle, playerFeetHitbox, camera.Position+playerVelocity+gravity)){ //on ground
+                return 1;
+            }
+        }
+    return 0;
 }
 
 //https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html
@@ -103,7 +154,7 @@ bool CheckCollision(Entity& entity, Camera& camera){
         triangle.p1=glm::vec3(entity.transform*glm::vec4(triangle.p1, 1.0f));
         triangle.p2=glm::vec3(entity.transform*glm::vec4(triangle.p2, 1.0f));
         triangle.p3=glm::vec3(entity.transform*glm::vec4(triangle.p3, 1.0f));
-        if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position)) return 1;
+        if(TestIntersect(triangle, playerHitbox, camera.Position)) return 1;
     }
     return 0;
 }
@@ -131,14 +182,23 @@ void CheckTriggers(Camera& camera, std::vector<size_t>& ids){
     }
 }
 
+void SmoothVelocity(glm::vec3& velocity, glm::vec3 offset, bool isGrounded){
+        playerVelocity.x=(offset.x+playerVelocity.x)*0.5f;
+        playerVelocity.y+=offset.y;
+        playerVelocity.z=(offset.z+playerVelocity.z)*0.5f;
+}
+
 void DoMovement(Camera& camera, GLFWwindow* window){
+    isOnGround=IsGrounded();
     glm::vec3 offset={0.0f, 0.0f, 0.0f };
     TakeInput(window, offset);
+
+    if(isCrouching) playerHitbox=playerCrouchHitbox;
+    else playerHitbox=playerDefaultHitbox;
+
     glm::vec3 camOffset=camera.ToCamVector(offset);
     playerVelocity+=gravity;
-    playerVelocity.x=(camOffset.x+playerVelocity.x)*0.5f;
-    playerVelocity.y+=camOffset.y;
-    playerVelocity.z=(camOffset.z+playerVelocity.z)*0.5f;
+    SmoothVelocity(playerVelocity, camOffset, isOnGround);
     for(Entity& e: entities){
         if(e.trigger) continue;
         ResolveCollision(e, playerVelocity, camera);
