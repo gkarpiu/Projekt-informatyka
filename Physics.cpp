@@ -17,8 +17,8 @@ const AABB playerCrouchHitbox={{0.0f, -0.5f, 0.0f}, {0.25f, 0.7f, 0.25f}};
 const float hitboxDiff=playerDefaultHitbox.extents.y-playerCrouchHitbox.extents.y-(playerDefaultHitbox.position.y-playerCrouchHitbox.position.y);
 AABB playerHitbox=playerDefaultHitbox;
 
-//const glm::vec3 spawnPoint={33.4f, -7.0f, 73.0f};
-const glm::vec3 spawnPoint={0.0f, 0.0f, 0.0f};
+const glm::vec3 spawnPoint={33.4f, -7.0f, 73.0f};
+//const glm::vec3 spawnPoint={0.0f, 0.0f, 0.0f};
 std::vector<Triangle> lastCollisions={};
 bool isOnGround=0;
 

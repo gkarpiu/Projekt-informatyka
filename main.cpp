@@ -12,13 +12,13 @@ int main(){
     size_t texNext=LoadTexture("next.png");
 
     std::vector<size_t> mesh1, uiThing;
-    size_t hitbox1=LoadObject("slope.obj", mesh1);
+    size_t hitbox1=LoadObject("ALO15.obj", mesh1);
     LoadObject("ui.obj", uiThing);
 
     size_t e1=AddEntity(mesh1, hitbox1, 0, 0);
     size_t e2=AddEntity(uiThing, 0, 0, 1);
 
-    entities[e1].transform=glm::translate(entities[e1].transform, {0.0f, -50, 0.0f});
+    entities[e1].transform=glm::translate(entities[e1].transform, {0, -10, 0});
 
     camera.Position=spawnPoint;
 
