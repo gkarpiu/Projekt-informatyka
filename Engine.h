@@ -43,11 +43,17 @@ struct Renderer{
     GLuint VBO=0;
     GLuint EBO=0;
 
+    size_t texture;
+
     size_t idCount;
 };
-struct Mesh{
+struct MeshPart{
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
+    size_t texture;
+};
+struct Mesh{
+    std::vector<MeshPart> parts;
 };
 struct Texture{
     GLuint id;
@@ -56,9 +62,8 @@ struct Texture{
 };
 struct Entity{
     glm::mat4 transform;
-    size_t mesh;
+    std::vector<size_t> mesh;
     size_t hitbox;
-    size_t texture;
     bool trigger;
 };
 
@@ -82,9 +87,9 @@ extern glm::mat4 uiprojection;
 extern Camera camera;
 
 size_t LoadTexture(const char* path);
-int LoadObject(std::string name);
-void UploadMesh(Mesh& mesh, Renderer& renderer);
-size_t AddEntity(size_t mesh, size_t hitbox, size_t texture, bool trigger);
+size_t LoadObject(std::string name, std::vector<size_t>& meshVec);
+void UploadMesh(MeshPart& mesh, Renderer& renderer);
+size_t AddEntity(std::vector<size_t>& mesh, size_t hitbox, bool trigger, bool ui);
 void DrawEntity(Entity& entity);
 void MouseCallback(GLFWwindow* window, double xpos, double ypos);
 

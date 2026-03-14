@@ -9,9 +9,12 @@ int main(){
     size_t texPlastic=LoadTexture("plastic.png");
     size_t texMetal=LoadTexture("metal.png");
 
-    size_t mesh1=LoadObject("thatthing.obj");
+    std::vector<size_t> mesh1, uiThing;
+    size_t hitbox1=LoadObject("thatthing.obj", mesh1);
+    LoadObject("ui.obj", uiThing);
 
-    size_t e1=AddEntity(mesh1, mesh1, texConcrete, 0);
+    size_t e1=AddEntity(mesh1, hitbox1, 0, 0);
+    size_t e2=AddEntity(uiThing, 0, 0, 1);
     //size_t e2=AddEntity(mesh1, mesh1, texWood, 0);
 
     entities[e1].transform=glm::translate(entities[e1].transform, {-50, -50, -50});

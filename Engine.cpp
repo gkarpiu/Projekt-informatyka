@@ -79,6 +79,7 @@ bool firstMouse=1;
 float lastX, lastY;
 std::vector<Renderer> meshes(1);
 std::vector<Entity> entities;
+std::vector<Entity> uiThings;
 std::vector<Texture> textures;
 std::vector<std::vector<Triangle>> collisions(1);
 glm::mat4 worldprojection=glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 1000.0f);
@@ -134,7 +135,7 @@ size_t LoadTexture(const char* path){
     return textures.size()-1;
 }
 
-int LoadObject(std::string name){
+size_t LoadObject(std::string name, std::vector<size_t>& meshVec){
     Mesh mesh;
     collisions.emplace_back();
     std::vector<glm::vec3> tpos;
@@ -149,7 +150,10 @@ int LoadObject(std::string name){
         std::string type;
         ss>>type;
         
-        if(type=="v"){
+        if(type=="usemtl"){
+            mesh.parts.emplace_back();
+            ss>>mesh.parts.back().texture;
+        }else if(type=="v"){
             tpos.emplace_back();
             ss>>tpos.back().x>>tpos.back().y>>tpos.back().z;
         }else if(type=="vn"){
@@ -172,22 +176,26 @@ int LoadObject(std::string name){
                 std::getline(vs, ts);
                 int norId=std::stoi(ts)-1;
                 float t=1-((tnor[norId].y+1)/2);
-                mesh.vertices.push_back({tpos[posId], tnor[norId], tuv[uvId], 0.4f*t+1.0f*(1-t), 1.0f});
-                mesh.indices.emplace_back(mesh.vertices.size()-1);
+                mesh.parts.back().vertices.push_back({tpos[posId], tnor[norId], tuv[uvId], 0.4f*t+1.0f*(1-t), 1.0f});
+                mesh.parts.back().indices.emplace_back(mesh.parts.back().vertices.size()-1);
                 points.push_back(tpos[posId]);
             }
             collisions.back().push_back({points[0], points[1], points[2]});
         }
     }
     inf.close();
-    std::cout<<"Parsed "<<mesh.vertices.size()<<" vertices\n";
+    std::cout<<"parsing complete\n";
 
-    meshes.emplace_back();
-    UploadMesh(mesh, meshes.back());
+    for(MeshPart m : mesh.parts){
+        meshes.emplace_back();
+        UploadMesh(m, meshes.back());
+        meshVec.push_back(meshes.size()-1);
+    }
 
-    return meshes.size()-1;
+    return collisions.size()-1;
 }
-void UploadMesh(Mesh& mesh, Renderer& renderer){
+void UploadMesh(MeshPart& mesh, Renderer& renderer){
+    renderer.texture=mesh.texture;
     renderer.idCount=mesh.indices.size();
     glGenVertexArrays(1, &renderer.VAO);
     glGenBuffers(1, &renderer.VBO);
@@ -213,15 +221,26 @@ void UploadMesh(Mesh& mesh, Renderer& renderer){
     glBindVertexArray(0);
 }
 
-size_t AddEntity(size_t mesh, size_t hitbox, size_t texture, bool trigger){
-    entities.push_back({glm::mat4(1.0f), mesh, hitbox, texture, trigger});
-    return entities.size()-1;
+size_t AddEntity(std::vector<size_t>& mesh, size_t hitbox, bool trigger, bool ui){
+    size_t id;
+    if(ui){
+        uiThings.push_back({glm::mat4(1.0f), mesh, hitbox, trigger});
+        id=uiThings.size()-1;
+    }else{
+        entities.push_back({glm::mat4(1.0f), mesh, hitbox, trigger});
+        id=entities.size()-1;
+    }
+    return id;
 }
 
 void DrawEntity(Entity& entity){
-    glBindVertexArray(meshes[entity.mesh].VAO);
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(entity.transform));
-    glDrawElements(GL_TRIANGLES, meshes[entity.mesh].idCount, GL_UNSIGNED_INT, 0);
+    for(int i=0; i<entity.mesh.size(); i++){
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures[meshes[entity.mesh[i]].texture].id);
+        glBindVertexArray(meshes[entity.mesh[i]].VAO);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(entity.transform));
+        glDrawElements(GL_TRIANGLES, meshes[entity.mesh[i]].idCount, GL_UNSIGNED_INT, 0);
+    }
     glBindVertexArray(0);
 }
 
@@ -393,13 +412,17 @@ void DoDrawing(Camera& camera){
     glm::mat4 view=camera.GetViewMatrix();
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     
+    glUniformMatrix4fv(worldprojLoc, 1, GL_FALSE, glm::value_ptr(worldprojection));
     for(Entity& e : entities){
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textures[e.texture].id);
         DrawEntity(e);
     }
 
     glUseProgram(uishaderProgram);
+
+    glUniformMatrix4fv(uiprojLoc, 1, GL_FALSE, glm::value_ptr(uiprojection));
+    for(Entity& e : uiThings){
+        DrawEntity(e);
+    }
 
     glfwSwapBuffers(window);
     glfwPollEvents();

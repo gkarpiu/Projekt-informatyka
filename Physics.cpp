@@ -79,9 +79,7 @@ bool TakeInput(GLFWwindow* window, glm::vec3& offset)
 }
 
 bool IsGrounded(){
-    const AABB playerFeetHitbox=
-    {{playerHitbox.position.x, playerHitbox.position.y-playerHitbox.extents.y, playerHitbox.position.z},
-    {playerHitbox.extents.x, 0.1f, playerHitbox.extents.z}};
+    const AABB playerFeetHitbox={{playerHitbox.position.x, playerHitbox.position.y-playerHitbox.extents.y, playerHitbox.position.z},{playerHitbox.extents.x, 0.1f, playerHitbox.extents.z}};
     for(Triangle triangle : lastCollisions){
 
             if(triangle.normal.y<0.0f) continue; //triangle is downward facing
@@ -190,7 +188,7 @@ void SmoothVelocity(glm::vec3& velocity, glm::vec3 offset, bool isGrounded){
 
 void DoMovement(Camera& camera, GLFWwindow* window){
     isOnGround=IsGrounded();
-    glm::vec3 offset={0.0f, 0.0f, 0.0f };
+    glm::vec3 offset={0.0f, 0.0f, 0.0f};
     TakeInput(window, offset);
 
     if(isCrouching) playerHitbox=playerCrouchHitbox;
