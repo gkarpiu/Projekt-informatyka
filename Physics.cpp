@@ -1,37 +1,42 @@
 #include "Physics.h"
 
-const float PLAYER_SPEED=0.3f;
-const glm::vec3 gravity={0.0f, -0.05f, 0.0f};
+const float playerAcceleration=0.1f;
+const float jumpStrength=0.3f;
+const glm::vec3 gravity={0.0f, -0.01f, 0.0f};
 glm::vec3 playerVelocity={0.0f, 0.0f, 0.0f};
 const AABB playerHitbox={{0.0f, -1.0f, 0.0f}, {0.25f, 1.4f, 0.25f}};
-const glm::vec3 spawnPoint={33.4f, -7.0f, 73.0f};
+//const glm::vec3 spawnPoint={33.4f, -7.0f, 73.0f};
+const glm::vec3 spawnPoint={0.0f, 0.0f, 0.0f};
+std::vector<Triangle> lastCollisions={};
 
-bool TakeInput(GLFWwindow* window, float& x, float& y, float& z)
+bool TakeInput(GLFWwindow* window, glm::vec3& offset)
 {
     bool moved=0;
     if (glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS) {
-        x+=PLAYER_SPEED;
+        offset.x+=playerAcceleration;
         moved=1;
     }
     if (glfwGetKey(window, GLFW_KEY_A)==GLFW_PRESS) {
-        x-=PLAYER_SPEED;
-        moved=1;
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS) {
-        y-=PLAYER_SPEED;
-        moved=1;
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS) {
-        y+=PLAYER_SPEED;
+        offset.x-=playerAcceleration;
         moved=1;
     }
     if (glfwGetKey(window, GLFW_KEY_S)==GLFW_PRESS) {
-        z-=PLAYER_SPEED;
+        offset.z-=playerAcceleration;
         moved=1;
     }
     if (glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS) {
-        z+=PLAYER_SPEED;
+        offset.z+=playerAcceleration;
         moved=1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS) {
+        for(Triangle triangle : lastCollisions){
+
+            if(triangle.normal.y<0.0f) continue; //triangle is downward facing
+            if(TestIntersect(triangle, playerHitbox, camera.Position+playerVelocity+gravity)){ //on ground
+                offset.y+=jumpStrength;
+                return 1; //break loop and return moved
+            }
+        }
     }
     return moved;
 }
@@ -104,6 +109,7 @@ bool CheckCollision(Entity& entity, Camera& camera){
 }
 
 void ResolveCollision(Entity& entity, glm::vec3& velocity, Camera& camera){
+    lastCollisions.clear();
     for(Triangle triangle : collisions[entity.hitbox]){
 
         if(glm::dot(velocity, triangle.normal)>=0.0f) continue; //dont check if moving away from triangle
@@ -111,7 +117,8 @@ void ResolveCollision(Entity& entity, glm::vec3& velocity, Camera& camera){
         triangle.p1=glm::vec3(entity.transform*glm::vec4(triangle.p1, 1.0f));
         triangle.p2=glm::vec3(entity.transform*glm::vec4(triangle.p2, 1.0f));
         triangle.p3=glm::vec3(entity.transform*glm::vec4(triangle.p3, 1.0f));
-        if(TestIntersect(triangle, {playerHitbox.position, playerHitbox.extents}, camera.Position+velocity)){
+        if(TestIntersect(triangle, playerHitbox, camera.Position+velocity)){
+            lastCollisions.push_back(triangle);
             velocity=velocity-glm::dot(velocity, triangle.normal)*triangle.normal;
         }
     }
@@ -126,12 +133,15 @@ void CheckTriggers(Camera& camera, std::vector<size_t>& ids){
 
 void DoMovement(Camera& camera, GLFWwindow* window){
     glm::vec3 offset={0.0f, 0.0f, 0.0f };
-    if(TakeInput(window, offset.x, offset.y, offset.z)){
-        glm::vec3 velocity=camera.ToCamVector(offset.x, offset.y, offset.z);
-        for(Entity& e: entities){
-            if(e.trigger) continue;
-            ResolveCollision(e, velocity, camera);
-        }
-        camera.updatePosition(velocity);
+    TakeInput(window, offset);
+    glm::vec3 camOffset=camera.ToCamVector(offset);
+    playerVelocity+=gravity;
+    playerVelocity.x=(camOffset.x+playerVelocity.x)*0.5f;
+    playerVelocity.y+=camOffset.y;
+    playerVelocity.z=(camOffset.z+playerVelocity.z)*0.5f;
+    for(Entity& e: entities){
+        if(e.trigger) continue;
+        ResolveCollision(e, playerVelocity, camera);
     }
+    camera.updatePosition(playerVelocity);
 }

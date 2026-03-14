@@ -8,15 +8,16 @@ struct AABB{
     glm::vec3 extents;
 };
 
-extern const float PLAYER_SPEED;
+extern const float playerAcceleration;
 extern const glm::vec3 gravity;
 extern glm::vec3 playerVelocity;
 extern const AABB playerHitbox;
 extern const glm::vec3 spawnPoint;
+extern std::vector<Triangle> lastCollisions;
 
 void DoMovement(Camera& camera, GLFWwindow* window);
 
-bool TakeInput(GLFWwindow* window, float& x, float& y, float& z);
+bool TakeInput(GLFWwindow* window, glm::vec3& offset);
 
 bool TestIntersect(const Triangle triangle, const AABB& aabb, glm::vec3 playerPos);
 void ResolveCollision(Entity& entity, glm::vec3& velocity, Camera& camera);

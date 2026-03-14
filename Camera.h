@@ -27,5 +27,5 @@ class Camera{
 
     void updatePosition(glm::vec3 pos);
 
-    glm::vec3 ToCamVector(float xpos, float ypos, float zpos);
+    glm::vec3 ToCamVector(glm::vec3 vector);
 };

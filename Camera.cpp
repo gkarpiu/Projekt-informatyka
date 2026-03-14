@@ -49,6 +49,6 @@ void Camera::updatePosition(glm::vec3 pos){
     Position+=pos;
 }
 
-glm::vec3 Camera::ToCamVector(float xpos, float ypos, float zpos){
-    return xpos*Right+ypos*WorldUp+zpos*FlatFront;
+glm::vec3 Camera::ToCamVector(glm::vec3 vector){
+    return vector.x*Right+vector.y*WorldUp+vector.z*FlatFront;
 }
