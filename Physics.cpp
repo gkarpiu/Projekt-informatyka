@@ -180,23 +180,19 @@ void CheckTriggers(Camera& camera, std::vector<size_t>& ids){
     }
 }
 
-void SmoothVelocity(glm::vec3& velocity, glm::vec3 offset, bool isGrounded){
-        playerVelocity.x=(offset.x+playerVelocity.x)*0.5f;
-        playerVelocity.y+=offset.y;
-        playerVelocity.z=(offset.z+playerVelocity.z)*0.5f;
-}
-
 void DoMovement(Camera& camera, GLFWwindow* window){
     isOnGround=IsGrounded();
     glm::vec3 offset={0.0f, 0.0f, 0.0f};
     TakeInput(window, offset);
-
     if(isCrouching) playerHitbox=playerCrouchHitbox;
     else playerHitbox=playerDefaultHitbox;
 
     glm::vec3 camOffset=camera.ToCamVector(offset);
     playerVelocity+=gravity;
-    SmoothVelocity(playerVelocity, camOffset, isOnGround);
+    playerVelocity.x=camOffset.x;
+    playerVelocity.y+=camOffset.y;
+    playerVelocity.z=camOffset.z;
+
     for(Entity& e: entities){
         if(e.trigger) continue;
         ResolveCollision(e, playerVelocity, camera);

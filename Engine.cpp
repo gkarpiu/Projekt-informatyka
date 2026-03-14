@@ -136,6 +136,7 @@ size_t LoadTexture(const char* path){
 }
 
 size_t LoadObject(std::string name, std::vector<size_t>& meshVec){
+    std::cout<<"Loading object "<<name<<"\n";
     Mesh mesh;
     collisions.emplace_back();
     std::vector<glm::vec3> tpos;
