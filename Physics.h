@@ -1,12 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <cmath>
 #include "Engine.h"
-
-struct AABB{
-    glm::vec3 position;
-    glm::vec3 extents;
-};
 
 extern const float playerAcceleration;
 extern const glm::vec3 gravity;
@@ -22,8 +18,6 @@ void DoMovement(Camera& camera, GLFWwindow* window);
 
 bool TakeInput(GLFWwindow* window, glm::vec3& offset);
 bool IsGrounded();
-bool TestIntersect(const Triangle triangle, const AABB& aabb, glm::vec3 playerPos);
-void ResolveCollision(Entity& entity, glm::vec3& velocity, Camera& camera);
-bool CheckCollision(Entity& entity, Camera& camera);
-void CheckTriggers(Camera& camera, std::vector<size_t>& ids);
+bool TestIntersect(Triangle triangle, const AABB& aabb);
+void CheckCollision(const AABB localPlayer, const Node* node, glm::vec3& velocity);
 bool testSAT(Triangle triangle, const AABB& aabb, glm::vec3 axis);

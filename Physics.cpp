@@ -1,15 +1,15 @@
 #include "Physics.h"
 
-const float playerAcceleration=0.07f;
-const float playerSprintAcceleration=playerAcceleration*2.5f;
+const float playerAcceleration=0.2f;
+const float playerSprintAcceleration=playerAcceleration*2.0f;
 const float playerCrouchAcceleration=playerAcceleration*0.5f;
-const float jumpStrength=0.3f;
+const float jumpStrength=0.4f;
 
-const float slideStrength=0.5f;
+const float slideStrength=0.7f;
 bool isCrouching=0;
 float crouchTimer=1.0f;
 
-const glm::vec3 gravity={0.0f, -0.01f, 0.0f};
+const glm::vec3 gravity={0.0f, -0.02f, 0.0f};
 glm::vec3 playerVelocity={0.0f, 0.0f, 0.0f};
 
 const AABB playerDefaultHitbox={{0.0f, -1.0f, 0.0f}, {0.25f, 1.4f, 0.25f}};
@@ -17,10 +17,15 @@ const AABB playerCrouchHitbox={{0.0f, -0.5f, 0.0f}, {0.25f, 0.7f, 0.25f}};
 const float hitboxDiff=playerDefaultHitbox.extents.y-playerCrouchHitbox.extents.y-(playerDefaultHitbox.position.y-playerCrouchHitbox.position.y);
 AABB playerHitbox=playerDefaultHitbox;
 
-const glm::vec3 spawnPoint={33.4f, -7.0f, 73.0f};
-//const glm::vec3 spawnPoint={0.0f, 0.0f, 0.0f};
+const glm::vec3 spawnPoint={0.0f, 0.0f, 0.0f};
 std::vector<Triangle> lastCollisions={};
 bool isOnGround=0;
+
+bool CollisionAABB(const AABB& a, const AABB& b){
+    return (a.position.x-a.extents.x<=b.position.x+b.extents.x && a.position.x+a.extents.x>=b.position.x-b.extents.x) &&
+           (a.position.y-a.extents.y<=b.position.y+b.extents.y && a.position.y+a.extents.y>=b.position.y-b.extents.y) &&
+           (a.position.z-a.extents.z<=b.position.z+b.extents.z && a.position.z+a.extents.z>=b.position.z-b.extents.z);
+}
 
 bool TakeInput(GLFWwindow* window, glm::vec3& offset)
 {
@@ -63,7 +68,7 @@ bool TakeInput(GLFWwindow* window, glm::vec3& offset)
         }
         if(crouchTimer<1.0f&&(isCrouching||!isOnGround))
         {
-            crouchTimer+=0.01f;
+            crouchTimer+=0.0166f;
             offset.z+=(1.0f-crouchTimer)*slideStrength;
         }else offset.z+=tmp;
 
@@ -78,25 +83,13 @@ bool TakeInput(GLFWwindow* window, glm::vec3& offset)
     return moved;
 }
 
-bool IsGrounded(){
-    const AABB playerFeetHitbox={{playerHitbox.position.x, playerHitbox.position.y-playerHitbox.extents.y, playerHitbox.position.z},{playerHitbox.extents.x, 0.1f, playerHitbox.extents.z}};
-    for(Triangle triangle : lastCollisions){
-
-            if(triangle.normal.y<0.0f) continue; //triangle is downward facing
-            if(TestIntersect(triangle, playerFeetHitbox, camera.Position+playerVelocity+gravity)){ //on ground
-                return 1;
-            }
-        }
-    return 0;
-}
-
 //https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html
-bool TestIntersect(Triangle triangle, const AABB& aabb, glm::vec3 playerPos)
+bool TestIntersect(Triangle triangle, const AABB& aabb)
 {
     //centering triangle
-    triangle.p1-=aabb.position+playerPos;
-    triangle.p2-=aabb.position+playerPos;
-    triangle.p3-=aabb.position+playerPos;
+    triangle.p1-=aabb.position;
+    triangle.p2-=aabb.position;
+    triangle.p3-=aabb.position;
     //triangle edges
     glm::vec3 ev1=triangle.p2-triangle.p1;
     glm::vec3 ev2=triangle.p3-triangle.p2;
@@ -147,41 +140,32 @@ bool testSAT(Triangle triangle, const AABB& aabb, glm::vec3 axis)
     return !(maxProj<-r || minProj>r);
 }
 
-bool CheckCollision(Entity& entity, Camera& camera){
-    for(Triangle triangle : collisions[entity.hitbox]){
-        triangle.p1=glm::vec3(entity.transform*glm::vec4(triangle.p1, 1.0f));
-        triangle.p2=glm::vec3(entity.transform*glm::vec4(triangle.p2, 1.0f));
-        triangle.p3=glm::vec3(entity.transform*glm::vec4(triangle.p3, 1.0f));
-        if(TestIntersect(triangle, playerHitbox, camera.Position)) return 1;
-    }
-    return 0;
-}
-
-void ResolveCollision(Entity& entity, glm::vec3& velocity, Camera& camera){
-    lastCollisions.clear();
-    for(Triangle triangle : collisions[entity.hitbox]){
-
-        if(glm::dot(velocity, triangle.normal)>=0.0f) continue; //dont check if moving away from triangle
-
-        triangle.p1=glm::vec3(entity.transform*glm::vec4(triangle.p1, 1.0f));
-        triangle.p2=glm::vec3(entity.transform*glm::vec4(triangle.p2, 1.0f));
-        triangle.p3=glm::vec3(entity.transform*glm::vec4(triangle.p3, 1.0f));
-        if(TestIntersect(triangle, playerHitbox, camera.Position+velocity)){
-            lastCollisions.push_back(triangle);
-            velocity=velocity-glm::dot(velocity, triangle.normal)*triangle.normal;
+void CheckCollision(const AABB localPlayer, const Node* node, glm::vec3& velocity){
+    if(!CollisionAABB(localPlayer, node->aabb)) return;
+    if(node->isLeaf)
+    {
+        for(int i=node->start;i<node->start+node->count;i++)
+        {
+            if(glm::dot(collisions[node->collisionId][i].normal, playerVelocity)>=0.0f) continue;
+            if(TestIntersect(collisions[node->collisionId][i], localPlayer))
+            {
+                std::cout<<"collision\n";
+                if(collisions[node->collisionId][i].normal.y>0.0f)
+                {
+                    isOnGround=1;
+                }
+                if(!std::isfinite(collisions[node->collisionId][i].normal.x) || !std::isfinite(collisions[node->collisionId][i].normal.y) || !std::isfinite(collisions[node->collisionId][i].normal.z)) continue;
+                velocity-=collisions[node->collisionId][i].normal*glm::dot(velocity, collisions[node->collisionId][i].normal);
+                //if(glm::isnan(velocity.x) || glm::isnan(velocity.y) || glm::isnan(velocity.z)) velocity=glm::vec3(0.0f);
+            }
         }
-    }
-}
-
-void CheckTriggers(Camera& camera, std::vector<size_t>& ids){
-    for(size_t i=0; i<entities.size(); i++){
-        if(!entities[i].trigger) continue;
-        if(CheckCollision(entities[i], camera)) ids.push_back(i);
+    }else{
+        CheckCollision(localPlayer, node->l, velocity);
+        CheckCollision(localPlayer, node->r, velocity);
     }
 }
 
 void DoMovement(Camera& camera, GLFWwindow* window){
-    isOnGround=IsGrounded();
     glm::vec3 offset={0.0f, 0.0f, 0.0f};
     TakeInput(window, offset);
     if(isCrouching) playerHitbox=playerCrouchHitbox;
@@ -193,9 +177,15 @@ void DoMovement(Camera& camera, GLFWwindow* window){
     playerVelocity.y+=camOffset.y;
     playerVelocity.z=camOffset.z;
 
+    std::cout<<camera.Position.x<<" "<<camera.Position.y<<" "<<camera.Position.z<<"\n";
+
+    isOnGround=0;
     for(Entity& e: entities){
         if(e.trigger) continue;
-        ResolveCollision(e, playerVelocity, camera);
+        if(glm::abs(glm::determinant(e.transform))<1e-8f) continue;
+        AABB localPlayer=playerHitbox;
+        localPlayer.position=glm::vec3(glm::inverse(e.transform)*glm::vec4(playerHitbox.position+camera.Position, 1.0f));
+        CheckCollision(localPlayer, e.bvh, playerVelocity);
     }
     camera.updatePosition(playerVelocity);
 }
