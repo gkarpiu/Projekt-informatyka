@@ -11,9 +11,10 @@ float crouchTimer=1.0f;
 
 const glm::vec3 gravity={0.0f, -0.02f, 0.0f};
 glm::vec3 playerVelocity={0.0f, 0.0f, 0.0f};
+glm::vec3 playerLocalVelocity={0.0f, 0.0f, 0.0f};
 
 const AABB playerDefaultHitbox={{0.0f, -1.0f, 0.0f}, {0.25f, 1.4f, 0.25f}};
-const AABB playerCrouchHitbox={{0.0f, -0.5f, 0.0f}, {0.25f, 0.7f, 0.25f}};
+const AABB playerCrouchHitbox={{0.0f, 0.0f, 0.0f}, {0.25f, 1.4f, 0.25f}};
 const float hitboxDiff=playerDefaultHitbox.extents.y-playerCrouchHitbox.extents.y-(playerDefaultHitbox.position.y-playerCrouchHitbox.position.y);
 AABB playerHitbox=playerDefaultHitbox;
 
@@ -46,7 +47,6 @@ bool TakeInput(GLFWwindow* window, glm::vec3& offset)
         if(isCrouching) camera.Position.y+=hitboxDiff; //uncrouch
         isCrouching=0;
     }
-    
     
     if (glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS) {
         offset.x+=tmp;
@@ -165,12 +165,13 @@ void CheckCollision(const AABB localPlayer, const Node* node, glm::vec3& velocit
 }
 
 void DoMovement(Camera& camera, GLFWwindow* window){
-    glm::vec3 offset={0.0f, 0.0f, 0.0f};
-    TakeInput(window, offset);
+    playerLocalVelocity=glm::vec3{0.0f};
+    TakeInput(window, playerLocalVelocity);
+
     if(isCrouching) playerHitbox=playerCrouchHitbox;
     else playerHitbox=playerDefaultHitbox;
 
-    glm::vec3 camOffset=camera.ToCamVector(offset);
+    glm::vec3 camOffset=camera.ToCamVector(playerLocalVelocity);
     playerVelocity+=gravity;
     playerVelocity.x=camOffset.x;
     playerVelocity.y+=camOffset.y;

@@ -253,6 +253,7 @@ Node* LoadObject(std::string name, std::vector<size_t>& meshVec){
         }
     }
     inf.close();
+    std::cout<<"parsing complete\n";
 
     for(MeshPart m : mesh.parts){
         meshes.emplace_back();
@@ -262,8 +263,8 @@ Node* LoadObject(std::string name, std::vector<size_t>& meshVec){
 
     std::cout<<"creating bvh..........\n";
     Node* bvh=CreateBVH(collisions.back(), 0, collisions.back().size(), collisions.size()-1);
-
     std::cout<<"bvh complete\n";
+
     return bvh;
 }
 void UploadMesh(MeshPart& mesh, Renderer& renderer){

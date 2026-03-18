@@ -7,6 +7,7 @@
 extern const float playerAcceleration;
 extern const glm::vec3 gravity;
 extern glm::vec3 playerVelocity;
+extern glm::vec3 playerLocalVelocity;
 extern const AABB playerDefaultHitbox;
 extern const AABB playerCrouchHitbox;
 extern AABB playerHitbox;

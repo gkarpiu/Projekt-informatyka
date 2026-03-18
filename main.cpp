@@ -8,13 +8,13 @@ int main(){
     //make sure to add texture to "textures" folder
     size_t texConcrete=LoadTexture("concrete.png");
     size_t texWood=LoadTexture("wood.png");
-    size_t texPlastic=LoadTexture("plastic.png");
     size_t texMetal=LoadTexture("metal.png");
+    size_t texPlastic=LoadTexture("plastic.png");
     size_t texBlack=LoadTexture("black.png");
     size_t texNext=LoadTexture("next.png");
 
     std::vector<size_t> mesh1, uiThing;
-    Node* mesh1bvh=LoadObject("thatthing.obj", mesh1);
+    Node* mesh1bvh=LoadObject("alo death no death tiling metal walce.obj", mesh1);
     //Node* uibvh=LoadObject("ui.obj", uiThing);
 
     size_t e1=AddEntity(mesh1, mesh1bvh, 0, 0);
@@ -32,12 +32,9 @@ int main(){
         DoDrawing(camera);
         double frameTime=glfwGetTime()-startTime;
         if (frameTime < targetFrameTime)
-        {
             glfwWaitEventsTimeout(targetFrameTime-frameTime);
-            std::cout<<"fine\n";
-        }
-        else
-            std::cout<<frameTime/targetFrameTime<<"x target\n";
+        if(glfwGetKey(window, GLFW_KEY_R)) camera.Position=spawnPoint;
+        std::cout<<frameTime/targetFrameTime<<"x target\n";
     }
     CloseEngine();
     return 0;
