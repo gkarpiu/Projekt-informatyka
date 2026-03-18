@@ -14,7 +14,7 @@ int main(){
     size_t texNext=LoadTexture("next.png");
 
     std::vector<size_t> mesh1, uiThing;
-    Node* mesh1bvh=LoadObject("ALO (no walce).obj", mesh1);
+    Node* mesh1bvh=LoadObject("thatthing.obj", mesh1);
     //Node* uibvh=LoadObject("ui.obj", uiThing);
 
     size_t e1=AddEntity(mesh1, mesh1bvh, 0, 0);

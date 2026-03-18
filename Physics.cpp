@@ -149,7 +149,6 @@ void CheckCollision(const AABB localPlayer, const Node* node, glm::vec3& velocit
             if(glm::dot(collisions[node->collisionId][i].normal, playerVelocity)>=0.0f) continue;
             if(TestIntersect(collisions[node->collisionId][i], localPlayer))
             {
-                std::cout<<"collision\n";
                 if(collisions[node->collisionId][i].normal.y>0.0f)
                 {
                     isOnGround=1;
@@ -176,8 +175,7 @@ void DoMovement(Camera& camera, GLFWwindow* window){
     playerVelocity.x=camOffset.x;
     playerVelocity.y+=camOffset.y;
     playerVelocity.z=camOffset.z;
-
-    std::cout<<camera.Position.x<<" "<<camera.Position.y<<" "<<camera.Position.z<<"\n";
+    //std::cout<<camera.Position.x<<" "<<camera.Position.y<<" "<<camera.Position.z<<"\n";
 
     isOnGround=0;
     for(Entity& e: entities){

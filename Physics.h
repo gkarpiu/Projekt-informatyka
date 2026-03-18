@@ -17,7 +17,6 @@ extern bool isOnGround;
 void DoMovement(Camera& camera, GLFWwindow* window);
 
 bool TakeInput(GLFWwindow* window, glm::vec3& offset);
-bool IsGrounded();
 bool TestIntersect(Triangle triangle, const AABB& aabb);
 void CheckCollision(const AABB localPlayer, const Node* node, glm::vec3& velocity);
 bool testSAT(Triangle triangle, const AABB& aabb, glm::vec3 axis);
