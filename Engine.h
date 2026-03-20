@@ -13,6 +13,8 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <chrono>
+#include <thread>
 #include "Camera.h"
 
 constexpr int WINDOW_WIDTH=1920;
