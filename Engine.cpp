@@ -1,6 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <image/stb_image.h>
-
 #include "engine.h"
 
 const char* worldvertexShaderSource=
@@ -77,6 +76,7 @@ unsigned int worldshaderProgram;
 unsigned int uishaderProgram;
 bool firstMouse=1;
 float lastX, lastY;
+const uint8_t LEAF_SIZE=16;
 std::vector<Renderer> meshes(1);
 std::vector<Entity> entities;
 std::vector<Entity> uiThings;
@@ -139,7 +139,71 @@ size_t LoadTexture(const char* path){
     return textures.size()-1;
 }
 
-size_t LoadObject(std::string name, std::vector<size_t>& meshVec){
+const glm::vec3 Centroid(const Triangle& a){
+    return (a.p1+a.p2+a.p3)/3.0f;
+}
+
+AABB computeBounds(const std::vector<Triangle>& prims, int start, int end){
+    glm::vec3 min=prims[start].p1, max=prims[start].p1;
+    for(int i=start; i<end; i++){
+        Triangle t=prims[i];
+        if(t.p1.x<min.x) min.x=t.p1.x;
+        else if(t.p1.x>max.x) max.x=t.p1.x;
+        if(t.p1.y<min.y) min.y=t.p1.y;
+        else if(t.p1.y>max.y) max.y=t.p1.y;
+        if(t.p1.z<min.z) min.z=t.p1.z;
+        else if(t.p1.z>max.z) max.z=t.p1.z;
+
+        if(t.p2.x<min.x) min.x=t.p2.x;
+        else if(t.p2.x>max.x) max.x=t.p2.x;
+        if(t.p2.y<min.y) min.y=t.p2.y;
+        else if(t.p2.y>max.y) max.y=t.p2.y;
+        if(t.p2.z<min.z) min.z=t.p2.z;
+        else if(t.p2.z>max.z) max.z=t.p2.z;
+
+        if(t.p3.x<min.x) min.x=t.p3.x;
+        else if(t.p3.x>max.x) max.x=t.p3.x;
+        if(t.p3.y<min.y) min.y=t.p3.y;
+        else if(t.p3.y>max.y) max.y=t.p3.y;
+        if(t.p3.z<min.z) min.z=t.p3.z;
+        else if(t.p3.z>max.z) max.z=t.p3.z;
+    }
+    return {(min+max)/2.0f, glm::abs((max-min)/2.0f)};
+}
+
+Node* CreateBVH(std::vector<Triangle>& prims, int start, int end, size_t collisionId)
+{
+    Node* node=new Node();
+    node->aabb=computeBounds(prims, start, end);
+
+    node->start=start;
+    node->count=end-start;
+    node->collisionId=collisionId;
+    if(node->count<=LEAF_SIZE){
+        node->l=node->r=nullptr;
+        node->isLeaf=1;
+        return node;
+    }
+
+    int axis;
+    if(node->aabb.extents.x>node->aabb.extents.y){
+        if(node->aabb.extents.x>node->aabb.extents.z) axis=0;
+        else axis=2;
+    }else{
+        if(node->aabb.extents.y>node->aabb.extents.z) axis=1;
+        else axis=2;
+    }
+
+    int mid=(start+end)/2;
+    std::nth_element(prims.begin()+start, prims.begin()+mid, prims.begin()+end, [axis](const Triangle& a, const Triangle& b){return Centroid(a)[axis]<Centroid(b)[axis];});
+
+    node->l=CreateBVH(prims, start, mid, collisionId);
+    node->r=CreateBVH(prims, mid, end, collisionId);
+    node->isLeaf=0;
+
+    return node;
+}
+Node* LoadObject(std::string name, std::vector<size_t>& meshVec){
     std::cout<<"Loading object "<<name<<"\n";
     Mesh mesh;
     collisions.emplace_back();
@@ -197,7 +261,11 @@ size_t LoadObject(std::string name, std::vector<size_t>& meshVec){
         meshVec.push_back(meshes.size()-1);
     }
 
-    return collisions.size()-1;
+    std::cout<<"creating bvh..........\n";
+    Node* bvh=CreateBVH(collisions.back(), 0, collisions.back().size(), collisions.size()-1);
+    std::cout<<"bvh complete\n";
+
+    return bvh;
 }
 void UploadMesh(MeshPart& mesh, Renderer& renderer){
     renderer.texture=mesh.texture;
@@ -226,7 +294,7 @@ void UploadMesh(MeshPart& mesh, Renderer& renderer){
     glBindVertexArray(0);
 }
 
-size_t AddEntity(std::vector<size_t>& mesh, size_t hitbox, bool trigger, bool ui){
+size_t AddEntity(std::vector<size_t>& mesh, Node* hitbox, bool trigger, bool ui){
     size_t id;
     if(ui){
         uiThings.push_back({glm::mat4(1.0f), mesh, hitbox, trigger});
@@ -240,8 +308,9 @@ size_t AddEntity(std::vector<size_t>& mesh, size_t hitbox, bool trigger, bool ui
 
 void DrawEntity(Entity& entity){
     for(int i=0; i<entity.mesh.size(); i++){
-        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[meshes[entity.mesh[i]].texture].id);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glBindVertexArray(meshes[entity.mesh[i]].VAO);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(entity.transform));
         glDrawElements(GL_TRIANGLES, meshes[entity.mesh[i]].idCount, GL_UNSIGNED_INT, 0);
@@ -390,13 +459,14 @@ int InitEngine(){
     glViewport(0, 0, WINDOW_WIDTH*WINDOW_SCALE, WINDOW_HEIGHT*WINDOW_SCALE);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, MouseCallback);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    glDisable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTexture(GL_TEXTURE0);
     //glClearColor(0.3f, 0.1f, 0.5f, 1.0f); 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);                                  //bg color
 

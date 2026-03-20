@@ -1,35 +1,40 @@
 #include "Physics.h"
 
 int main(){
+
+    const double targetFrameTime = 1.0f / 60.0f;
     InitEngine();
 
     //make sure to add texture to "textures" folder
-    size_t texConcrete=LoadTexture("concrete.png");
+    size_t texConcrete=LoadTexture("concrete.jpg");
     size_t texWood=LoadTexture("wood.png");
-    size_t texPlastic=LoadTexture("plastic.png");
     size_t texMetal=LoadTexture("metal.png");
+    size_t texPlastic=LoadTexture("plastic.png");
     size_t texBlack=LoadTexture("black.png");
     size_t texNext=LoadTexture("next.png");
 
     std::vector<size_t> mesh1, uiThing;
-    size_t hitbox1=LoadObject("ALO15.obj", mesh1);
-    LoadObject("ui.obj", uiThing);
+    Node* mesh1bvh=LoadObject("alo.obj", mesh1);
+    //Node* uibvh=LoadObject("ui.obj", uiThing);
 
-    size_t e1=AddEntity(mesh1, hitbox1, 0, 0);
-    size_t e2=AddEntity(uiThing, 0, 0, 1);
+    size_t e1=AddEntity(mesh1, mesh1bvh, 0, 0);
+    //size_t e2=AddEntity(uiThing, uibvh, 0, 1);
 
-    entities[e1].transform=glm::translate(entities[e1].transform, {0, -10, 0});
+    entities[e1].transform=glm::translate(entities[e1].transform, {0, 0, 0});
 
     camera.Position=spawnPoint;
 
     //Render loop
     while(!ShouldClose())
     {
+        double startTime = glfwGetTime();
         DoMovement(camera, window);
-        std::vector<size_t> triggerIds;
-        CheckTriggers(camera, triggerIds);
-        for(size_t id : triggerIds) std::cout<<"entity: "<<id<<" collided\n";
         DoDrawing(camera);
+        double frameTime=glfwGetTime()-startTime;
+        if (frameTime < targetFrameTime)
+            std::this_thread::sleep_for(std::chrono::duration<double>(targetFrameTime-frameTime));
+        if(glfwGetKey(window, GLFW_KEY_R)) {camera.Position=spawnPoint; playerVelocity=glm::vec3{0.0f};}
+        std::cout<<frameTime/targetFrameTime<<"x target\n";
     }
     CloseEngine();
     return 0;

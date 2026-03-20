@@ -12,6 +12,9 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <algorithm>
+#include <chrono>
+#include <thread>
 #include "Camera.h"
 
 constexpr int WINDOW_WIDTH=1920;
@@ -22,6 +25,8 @@ extern const char* worldfragmentShaderSource;
 
 extern const char* uivertexShaderSource;
 extern const char* uifragmentShaderSource;
+
+extern const uint8_t LEAF_SIZE;
 
 struct Triangle{
     glm::vec3 p1;
@@ -60,10 +65,23 @@ struct Texture{
     int width;
     int height;
 };
+struct AABB{
+    glm::vec3 position;
+    glm::vec3 extents;
+};
+struct Node{
+    AABB aabb;
+    Node* l;
+    Node* r;
+    int start;
+    int count;
+    int collisionId;
+    bool isLeaf;
+};
 struct Entity{
     glm::mat4 transform;
     std::vector<size_t> mesh;
-    size_t hitbox;
+    Node* bvh;
     bool trigger;
 };
 
@@ -86,10 +104,14 @@ extern glm::mat4 uiprojection;
 
 extern Camera camera;
 
+Node* CreateBVH(const std::vector<Triangle>& prims, int start, int end, size_t collisionId);
+const glm::vec3 Centroid(const Triangle& a);
+bool CollisionAABB(const AABB& a, const AABB& b);
+AABB computeBounds(const std::vector<Triangle>& prims, int start, int end);
 size_t LoadTexture(const char* path);
-size_t LoadObject(std::string name, std::vector<size_t>& meshVec);
+Node* LoadObject(std::string name, std::vector<size_t>& meshVec);
 void UploadMesh(MeshPart& mesh, Renderer& renderer);
-size_t AddEntity(std::vector<size_t>& mesh, size_t hitbox, bool trigger, bool ui);
+size_t AddEntity(std::vector<size_t>& mesh, Node* hitbox, bool trigger, bool ui);
 void DrawEntity(Entity& entity);
 void MouseCallback(GLFWwindow* window, double xpos, double ypos);
 
