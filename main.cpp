@@ -6,12 +6,17 @@ int main(){
     InitEngine();
 
     //make sure to add texture to "textures" folder
-    size_t texConcrete=LoadTexture("concrete.jpg");
-    size_t texWood=LoadTexture("wood.png");
-    size_t texMetal=LoadTexture("metal.png");
-    size_t texPlastic=LoadTexture("plastic.png");
-    size_t texBlack=LoadTexture("black.png");
-    size_t texNext=LoadTexture("next.png");
+    size_t texDesk=LoadTexture("blat_lawki.png");
+    size_t texDoor=LoadTexture("drzwi.png");
+    size_t texChair=LoadTexture("lawka siedzenie.png");
+    size_t texQuepasa=LoadTexture("pixil-frame-0 (6).png");
+    size_t texFloorWood=LoadTexture("podloga drewniana.png");
+    size_t texWallConcrete=LoadTexture("sciana betonowa.png");
+    size_t texWallConcreteTheSecond=LoadTexture("sciana_betonowa.png");
+    size_t texWallPhysics=LoadTexture("sciana_fizyczna+informatyczna.png");
+    size_t texWall=LoadTexture("sciana.png");
+    size_t texBin=LoadTexture("smietnik.png");
+    size_t texBoard=LoadTexture("tablica korkowa.png");
 
     std::vector<size_t> mesh1, uiThing;
     Node* mesh1bvh=LoadObject("alo.obj", mesh1);
