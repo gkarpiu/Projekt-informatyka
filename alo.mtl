@@ -1,4 +1,4 @@
-# Blender 5.0.1 MTL File: 'alo death no death.blend'
+# Blender 5.0.1 MTL File: 'alo.blend'
 # www.blender.org
 
 newmtl 0
@@ -8,8 +8,198 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
-map_Kd textures/concrete.png
-map_d textures/concrete.png
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.007
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.008
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.009
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.010
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.011
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.012
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.013
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.014
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.015
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.016
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.017
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.018
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.019
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.020
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.021
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.022
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+
+newmtl 0.023
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/concrete.png
 
 newmtl 1
 Ns 250.000000
@@ -18,8 +208,8 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
-map_Kd textures/wood.png
-map_d textures/wood.png
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/wood.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/wood.png
 
 newmtl 2
 Ns 250.000000
@@ -28,8 +218,208 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
-map_Kd textures/metal.png
-map_d textures/metal.png
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.007
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.008
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.009
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.010
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.011
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.012
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.013
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.014
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.015
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.016
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.017
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.018
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.019
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+
+newmtl 2.020
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/metal.png
 
 newmtl 3
 Ns 250.000000
@@ -38,5 +428,15 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
-map_Kd textures/plastic.png
-map_d textures/plastic.png
+map_Kd C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/plastic.png
+map_d C:/Users/SZYMO_~1/AppData/Local/Documents/GitHub/Projekt-informatyka/textures/plastic.png
+
+newmtl 4
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd textures/tablica korkowa.png
+map_d textures/tablica korkowa.png

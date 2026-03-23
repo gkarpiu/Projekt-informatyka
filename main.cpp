@@ -2,21 +2,14 @@
 
 int main(){
 
-    const double targetFrameTime = 1.0f / 60.0f;
+    const double targetFrameTime=1.0f/60.0f;
     InitEngine();
 
     //make sure to add texture to "textures" folder
-    size_t texDesk=LoadTexture("blat_lawki.png");
-    size_t texDoor=LoadTexture("drzwi.png");
-    size_t texChair=LoadTexture("lawka siedzenie.png");
-    size_t texQuepasa=LoadTexture("pixil-frame-0 (6).png");
-    size_t texFloorWood=LoadTexture("podloga drewniana.png");
-    size_t texWallConcrete=LoadTexture("sciana betonowa.png");
-    size_t texWallConcreteTheSecond=LoadTexture("sciana_betonowa.png");
-    size_t texWallPhysics=LoadTexture("sciana_fizyczna+informatyczna.png");
-    size_t texWall=LoadTexture("sciana.png");
-    size_t texBin=LoadTexture("smietnik.png");
-    size_t texBoard=LoadTexture("tablica korkowa.png");
+    size_t texWallConcrete=LoadTexture("concrete.jpg");
+    size_t texDesk=LoadTexture("wood.png");
+    size_t texLeg=LoadTexture("metal.png");
+    size_t texComp=LoadTexture("plastic.png");
 
     std::vector<size_t> mesh1, uiThing;
     Node* mesh1bvh=LoadObject("alo.obj", mesh1);
@@ -32,12 +25,11 @@ int main(){
     //Render loop
     while(!ShouldClose())
     {
-        double startTime = glfwGetTime();
+        double startTime=glfwGetTime();
         DoMovement(camera, window);
         DoDrawing(camera);
         double frameTime=glfwGetTime()-startTime;
-        if (frameTime < targetFrameTime)
-            std::this_thread::sleep_for(std::chrono::duration<double>(targetFrameTime-frameTime));
+        //if(frameTime<targetFrameTime) std::this_thread::sleep_for(std::chrono::duration<double>(targetFrameTime-frameTime));
         if(glfwGetKey(window, GLFW_KEY_R)) {camera.Position=spawnPoint; playerVelocity=glm::vec3{0.0f};}
         std::cout<<frameTime/targetFrameTime<<"x target\n";
     }
